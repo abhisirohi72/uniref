@@ -2,7 +2,7 @@
 include('inc/header.php');
 
 $user_id = $_SESSION['user_id'];
-
+include("C:/xampp/htdocs/send_alert/phpmailer.lang-en.php");
 include("C:/xampp/htdocs/send_alert/class.phpmailer.php");
 include("C:/xampp/htdocs/send_alert/class.smtp.php");
 
@@ -116,7 +116,7 @@ function array_msort($array, $cols)
 
 function sendMail($email,$msg,$TicketNo) {
    // $email="ankur@g-trac.in,priya@g-trac.in,harish@g-trac.in";
-
+	$email= "abhishek@gtrac.in";
 	if($msg!="")
 	{
 		$mail=new PHPMailer();
@@ -234,7 +234,7 @@ if (isset($_POST['save_people'])) {
 	
 	
 	$getCustId = select_query("SELECT id,cust_id,name,amc_service_done FROM $db_name.customer_details where cust_id='".$cust_id."' and 
-	is_active='1' and loginid='".$_SESSION['user_id']."' ");
+	is_active='1' ");
 	//echo "<pre>";print_r($getCustId);die;
 	$jobId = "M".date("dmy")."0".$getCustId[0]['id']."FR".($getCustId[0]['amc_service_done']+1);
 		
@@ -269,7 +269,7 @@ if (isset($_POST['save_people'])) {
 	$cur_date= date('Y-m-d 00:00:00');
 	
 	$duplicate_chk = select_query("SELECT * FROM $db_name.all_job_details WHERE customer_id='".$cust_id."' and ticket_no='".$jobId."' and 
-		request_date='".$req_date."' and to_technician='".$tech_id."' and loginid='".$_SESSION['user_id']."' and is_active='1' ");
+		request_date='".$req_date."' and to_technician='".$tech_id."' and is_active='1' ");
 	//echo "<pre>";print_r($duplicate_chk);die;
 		
 		
@@ -286,19 +286,18 @@ if (isset($_POST['save_people'])) {
 			'serial_no' => $serial_no, 'symptom' => $symptom,  'work_type' => $work_type, 'priority_type' => $priority_type, 
 			'customer_email_id' => $cust_email_id, 'customer_phone_no' => $cust_phone_no,
 			'amount_to_be_collected' => $amount_to_be_collected, 'total_working_hrs_req' => $total_working_hrs,
-			'job_assign_time' => date("Y-m-d H:i:s"),  'job_status' => 0,  'loginid' => $_SESSION['user_id']);
+			'job_assign_time' => date("Y-m-d H:i:s"),  'job_status' => 0);
 			
 			$insert_query = insert_query($db_name.'.all_job_details', $insert_array);
 			
 			
 			$update_warranty = array('date_of_installation' => $req_date);
 			
-			$condition = array('id' => $getCustId[0]['id'], 'loginid' => $_SESSION['user_id'], 'is_active' => 1);            
+			$condition = array('id' => $getCustId[0]['id'], 'is_active' => 1);            
 			update_query($db_name.'.customer_details', $update_warranty, $condition);
 		
 			
-			$techData = select_query("SELECT * FROM $db_name.technicians_login_details WHERE id='".$tech_id."' and 
-									  loginid='".$_SESSION['user_id']."' and is_active='1' ");
+			$techData = select_query("SELECT * FROM $db_name.technicians_login_details WHERE id='".$tech_id."' and is_active='1' ");
 			
 			$textTosend.='Hi '.$cust_name.',<br>';
 			$textTosend.='<br>Your '.$service_type.' Request has been Received for '.date("dS F Y",strtotime($req_date)).'.<br>';
@@ -313,12 +312,12 @@ if (isset($_POST['save_people'])) {
 			$msgtxt_tech = "Hi ".$techData[0]['emp_name'].", One Service request has been assigned to you on ".date("dS F Y",strtotime($req_date)).".";
 			
 			$insert_notification_array = array('person_id' => $cust_id , 'phone_no' => $cust_phone_no, 'message' => $msgtxt, 
-			'from_date' => $req_date, 'to_date' => $req_date, 'loginid' => $_SESSION['user_id']);
+			'from_date' => $req_date, 'to_date' => $req_date);
 			
 			insert_query($db_name.'.cust_push_notification', $insert_notification_array);
 			
 			$insert_tech_notification_array = array('person_id' => $tech_id , 'phone_no' => $techData[0]['mobile_no'], 'message' => $msgtxt_tech, 
-			'from_date' => $req_date, 'to_date' => $req_date, 'loginid' => $_SESSION['user_id']);
+			'from_date' => $req_date, 'to_date' => $req_date);
 			
 			insert_query($db_name.'.push_notification', $insert_tech_notification_array);
 			
@@ -359,14 +358,14 @@ if (isset($_POST['save_people'])) {
 											);
 					  
 					 $API_ACCESS_KEY = "AAAA7NXaEQw:APA91bFDi-bgj-sxloGpd1hUhxscejG2KonWaWa1_gZSK5arSV8hwGJNXcg96lXZiwfAFKeQOkY2QVePjxgVoh6YWbnnDNfc7jRIOzPFnKh3Z0AVow6VTwXA5vkvNN0ob7EFPj_GKSqH";
-					 $message_status = send_ios_notification($tokens,$Notificato_msg,$API_ACCESS_KEY);
+					 //$message_status = send_ios_notification($tokens,$Notificato_msg,$API_ACCESS_KEY);abhishek
 					
 				} else {
 					
 					$Notificato_msg = array("data" => "New Job Allocated. Please Refresh Application");
 			 
 					$androidkey = "AAAAityYBUo:APA91bHqlslQqmabKf60tA5oag-k8AmZ4HYezea4P3utHDsZZEeDe9hLL1nenM_MAJdIZPY1Ou8oeOKGK47KwpP7KuUm7KPNCMPmKlQZSa-jcIx0uD9Cu-b3lpBXwPJK_nEOjEc1NrNc";			
-					$message_status = send_notification_android2($tokens,$Notificato_msg,$androidkey);
+					//$message_status = send_notification_android2($tokens,$Notificato_msg,$androidkey);abhishek
 				
 				}
 				
@@ -385,21 +384,20 @@ if (isset($_POST['save_people'])) {
 											);
 					  
 					 $CUST_API_ACCESS_KEY = "AAAA87f8--I:APA91bGG1Ymiu8R4HSJoa25ot1NBltzxgMs2BcUzY2zye-UFNlW98ak1Pf5_4cqBsgQYuyYCaLh1pmTdTJGngrk5LO2rbj7t7RNZLS-tcQdisJaGku75bRCue2_dbAZEIYTyLm6Q9d6r";
-					 $message_status = send_ios_notification($cust_tokens,$cust_Notificato_msg,$CUST_API_ACCESS_KEY);
+					//$message_status = send_ios_notification($cust_tokens,$cust_Notificato_msg,$CUST_API_ACCESS_KEY);abhishek
 					
 				} else {
 					
 					$cust_Notificato_msg = array("data" => "We have Received Your Service Request");
 			 
 					$cust_androidkey = "AAAApKEFvR0:APA91bGiQdxPMnsX6gAi2-jZL8Du-AakkLwRTU_bx-_nCHaTncKf85hSuti8-LkAWs62pyJjulPs3URy69-vm2UoLBztqzrjYS38nCLtTf7ASJ8T1_7WH4xkSXEWWQDSDkRWeBPLOXSg";			
-					$message_status = send_notification_android2($cust_tokens,$cust_Notificato_msg,$cust_androidkey);
+					//$message_status = send_notification_android2($cust_tokens,$cust_Notificato_msg,$cust_androidkey);abhishek
 				
 				}
 				
 			}
 			
 			if($insert_query) {
-	
 				echo "<script>window.location.href='view-request-job.php'</script>";
 		
 			
@@ -459,10 +457,10 @@ if (isset($_POST['save_people'])) {
 			  unset($_SESSION['jobnotcreate_msg']);
 			  
 			  $get_cust_recd = select_query("SELECT id,concat(name,'##',cust_id) as cust_id,concat(company_name,' / ',cust_id) as cust_name,
-			  company_name, phone_no FROM $db_name.customer_details WHERE is_active='1' and loginid='".$_SESSION['user_id']."'");
+			  company_name, phone_no FROM $db_name.customer_details WHERE is_active='1' ");
 			  
 			  $get_tech_recd = select_query("SELECT id,concat(emp_name,' / ',mobile_no) as tech_name,mobile_no  FROM 
-			  $db_name.technicians_login_details WHERE is_active='1' and loginid='".$_SESSION['user_id']."'");
+			  $db_name.technicians_login_details WHERE is_active='1' ");
 			  
 			  $get_Symptom = select_query("SELECT * FROM $db_name.symptoms_tbl WHERE is_active='1' ");
 			  

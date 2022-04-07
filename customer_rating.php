@@ -13,25 +13,25 @@ if(isset($_POST["submit"]))
 	
 	if($startdate!='' && $Enddate!='')
 	{
-		$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and is_active='0' and job_rating!='' and (job_close_time BETWEEN '".$startdate."' AND '".$Enddate."') ";
+		$WhereQuery="WHERE is_active='0' and job_rating!='' and (job_close_time BETWEEN '".$startdate."' AND '".$Enddate."') ";
 	} 
 	else if($startdate!='' && $Enddate=='')
 	{
-		$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and is_active='0' and job_rating!='' and (job_close_time BETWEEN '".$startdate."' AND '".$startdate."') ";
+		$WhereQuery="WHERE is_active='0' and job_rating!='' and (job_close_time BETWEEN '".$startdate."' AND '".$startdate."') ";
 	}
 	else if($startdate=='' && $Enddate!='')
 	{
-		$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and is_active='0' and job_rating!='' and (job_close_time BETWEEN '".$Enddate."' AND '".$Enddate."') ";
+		$WhereQuery="WHERE is_active='0' and job_rating!='' and (job_close_time BETWEEN '".$Enddate."' AND '".$Enddate."') ";
 	} 
 	else 
 	{
-		$WhereQuery = "WHERE loginid='".$_SESSION['user_id']."' and is_active='0' and job_rating!='' order by job_close_time desc ";
+		$WhereQuery = "WHERE is_active='0' and job_rating!='' order by job_close_time desc ";
 	}
 	
 }
 else
 {			
-	$WhereQuery = "WHERE loginid='".$_SESSION['user_id']."' and is_active='0' and job_rating!='' order by job_close_time desc";
+	$WhereQuery = "WHERE is_active='0' and job_rating!='' order by job_close_time desc";
 }
 
 $get_cust_rating_data = select_query("SELECT * FROM $db_name.all_job_details ".$WhereQuery);
@@ -84,10 +84,10 @@ $get_cust_rating_data = select_query("SELECT * FROM $db_name.all_job_details ".$
 		<div class="widget-box">
           <div class="widget-title"> <span class="icon"><i class="icon-th"></i></span>
             <h5>All Customer Rating</h5>
-			
+			<a href="download_excel.php?action=customer_rating" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Export Excel</a>
           </div>
           <div class="widget-content nopadding">
-            <table class="table table-bordered data-table table-responsive-lg">
+            <table class="table table-bordered data-table table-responsive-lg" id="filtertable">
               <thead>
                 <tr>
                   <th>SNo</th>
@@ -125,7 +125,10 @@ $get_cust_rating_data = select_query("SELECT * FROM $db_name.all_job_details ".$
     </div>
   </div>
 </div>
-
+<?php
+	$filename= basename($_SERVER['REQUEST_URI'], '?' . $_SERVER['QUERY_STRING']);
+	require_once ('filtertable.php');
+?>
 <!--Footer-part-->
 <div class="row-fluid">
   <div id="footer" class="span12"> 2019 &copy; Gtrac. All Rights Reserved. </div>

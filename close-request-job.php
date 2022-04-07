@@ -34,12 +34,26 @@ function array_msort($array, $cols)
 	return $ret;
 }
 //echo "<pre>";print_r($_GET);die;
+if( $_GET['action'] == 'deleteSubUser' ) {
+	
+	
+	$update_array = array('is_deleted' => '1');
+	
+	$condition = array('id' => base64_decode($_GET['id']));            
+	$result = update_query($db_name.'.login_details', $update_array, $condition);
+			 
+	if( $result == true ){
+		$_SESSION['success_msg'] = 'set';
+		echo "<script>window.location.href='view_sub_users.php'</script>";
+	}
+}
+
 if( $_GET['action'] == 'deleteTech' ) {
 	
 	
 	$update_array = array('is_active' => '0');
 	
-	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1, 'loginid' => $_SESSION['user_id']);            
+	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1);            
 	$result = update_query($db_name.'.technicians_login_details', $update_array, $condition);
 			 
 	if( $result == true ){
@@ -53,7 +67,7 @@ if( $_GET['action'] == 'leaveApprove' ) {
 	
 	$update_array = array('is_status' => '1');
 	
-	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1, 'loginid' => $_SESSION['user_id']);            
+	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1);            
 	$result = update_query($db_name.'.leave_request', $update_array, $condition);
 			 
 	if( $result == true ){
@@ -67,7 +81,7 @@ if( $_GET['action'] == 'leaveReject' ) {
 	
 	$update_array = array('is_status' => '2');
 	
-	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1, 'loginid' => $_SESSION['user_id']);            
+	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1);            
 	$result = update_query($db_name.'.leave_request', $update_array, $condition);
 			 
 	if( $result == true ){
@@ -81,7 +95,7 @@ if( $_GET['action'] == 'deleteCustomer' ) {
 	
 	$update_array = array('is_active' => '0');
 	
-	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1, 'loginid' => $_SESSION['user_id']);            
+	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1);            
 	$result = update_query($db_name.'.customer_details', $update_array, $condition);
 			 
 	if( $result == true ){
@@ -95,7 +109,7 @@ if( $_GET['action'] == 'closeEnquiry' ) {
 	
 	$update_array = array('is_active' => 0, 'ta_query_close_time' => date("Y-m-d H:i:s"));
 	
-	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1, 'login_id' => $_SESSION['user_id']);            
+	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1);            
 	$result = update_query($db_name.'.extra_expense_claim_tbl', $update_array, $condition);
 			 
 	if( $result == true ){
@@ -109,7 +123,7 @@ if( $_GET['action'] == 'closeTicket' ) {
 	
 	$update_array = array('job_close_time' => date("Y-m-d H:i:s"), 'is_active' => '0', 'closed_by' => 'Backend System');
 	
-	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => '1', 'loginid' => $_SESSION['user_id']);            
+	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => '1');            
 	$result = update_query($db_name.'.all_job_details', $update_array, $condition);
 			 
 	if( $result == true ){
@@ -123,7 +137,7 @@ if( $_GET['action'] == 'expanseApprove' ) {
 	
 	$update_array = array('approve_status' => '1');
 	
-	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1, 'login_id' => $_SESSION['user_id']);            
+	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1);            
 	$result = update_query($db_name.'.extra_expense_claim_tbl', $update_array, $condition);
 			 
 	if( $result == true ){
@@ -137,7 +151,7 @@ if( $_GET['action'] == 'expanseReject' ) {
 	
 	$update_array = array('approve_status' => '2');
 	
-	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1, 'login_id' => $_SESSION['user_id']);            
+	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1);            
 	$result = update_query($db_name.'.extra_expense_claim_tbl', $update_array, $condition);
 			 
 	if( $result == true ){
@@ -150,7 +164,7 @@ if( $_GET['action'] == 'PostPond' ) {
 	
 	$req_id = base64_decode($_GET['id']);
 	
-	$get_edit_recd = select_query("SELECT * FROM $db_name.request WHERE id='".$req_id."' and login_id='".$_SESSION['user_id']."' ");
+	$get_edit_recd = select_query("SELECT * FROM $db_name.request WHERE id='".$req_id."'");
 	
 	$PostPondDate = $get_edit_recd[0]['postponed_date'];
 	$phone = $get_edit_recd[0]['phone_no'];
@@ -180,14 +194,14 @@ if( $_GET['action'] == 'PostPond' ) {
 					
 			$update_array = array('current_record' => 0, 'job_type' => 2, 'sequence_no' => $sequence_no, 'sequence_date' => date("Y-m-d", strtotime($PostPondDate)), 'fromtime' => $fromtime, 'totime' => $totime );
 		
-			$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1, 'login_id' => $_SESSION['user_id']);            
+			$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1);            
 			$result = update_query($db_name.'.request', $update_array, $condition);
 						
 		}else{
 			
 			$update_array = array('current_record' => 0, 'job_type' => 1, 'sequence_no' => $sequence_no, 'sequence_date' => date("Y-m-d", strtotime($PostPondDate)), 'fromtime' => $fromtime, 'totime' => $totime );
 				
-			$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1, 'login_id' => $_SESSION['user_id']);            
+			$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1);            
 			$result = update_query($db_name.'.request', $update_array, $condition);
 						
 		}
@@ -298,8 +312,7 @@ if( $_GET['action'] == 'PostPond' ) {
 					$sql2 .= $element.", ";
 			}
 			
-			$sql2 .= " ) AND sequence_date='".date("Y-m-d", strtotime($fromtime))."' AND 
-			login_id='".$_SESSION['user_id']."' AND phone_no='".$phone."' AND emp_id = ".$emp_id;
+			$sql2 .= " ) AND sequence_date='".date("Y-m-d", strtotime($fromtime))."' AND phone_no='".$phone."' AND emp_id = ".$emp_id;
 			
 			
 			$result = select_query($sql2);
@@ -330,14 +343,14 @@ if( $_GET['action'] == 'PostPond' ) {
 						
 				$update_array = array('current_record' => 0, 'job_type' => 2, 'sequence_no' => $sequence_no, 'sequence_date' => date("Y-m-d", strtotime($PostPondDate)), 'fromtime' => $fromtime, 'totime' => $totime );
 			
-				$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1, 'login_id' => $_SESSION['user_id']);            
+				$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1);            
 				$result = update_query($db_name.'.request', $update_array, $condition);
 							
 			}else{
 				
 				$update_array = array('current_record' => 0, 'job_type' => 1, 'sequence_no' => $sequence_no, 'sequence_date' => date("Y-m-d", strtotime($PostPondDate)), 'fromtime' => $fromtime, 'totime' => $totime );
 					
-				$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1, 'login_id' => $_SESSION['user_id']);            
+				$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1);            
 				$result = update_query($db_name.'.request', $update_array, $condition);
 							
 			}
@@ -370,14 +383,14 @@ if( $_GET['action'] == 'PostPond' ) {
 						
 				$update_array = array('current_record' => 0, 'job_type' => 2, 'sequence_no' => $sequence_no, 'sequence_date' => date("Y-m-d", strtotime($PostPondDate)), 'fromtime' => $fromtime, 'totime' => $totime );
 			
-				$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1, 'login_id' => $_SESSION['user_id']);            
+				$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1);            
 				$result = update_query($db_name.'.request', $update_array, $condition);
 							
 			}else{
 				
 				$update_array = array('current_record' => 0, 'job_type' => 1, 'sequence_no' => $sequence_no, 'sequence_date' => date("Y-m-d", strtotime($PostPondDate)), 'fromtime' => $fromtime, 'totime' => $totime );
 					
-				$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1, 'login_id' => $_SESSION['user_id']);            
+				$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1);            
 				$result = update_query($db_name.'.request', $update_array, $condition);
 							
 			}
@@ -400,7 +413,7 @@ if( $_GET['action'] == 'Cancel' ) {
 		 		
 	$update_array = array('current_record' => 0, 'job_type' => 2 );
 
-	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1, 'login_id' => $_SESSION['user_id']);            
+	$condition = array('id' => base64_decode($_GET['id']), 'is_active' => 1);            
 	$result = update_query($db_name.'.request', $update_array, $condition);
 					
 			 

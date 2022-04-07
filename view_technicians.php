@@ -4,7 +4,7 @@ include('inc/header.php');
 
 $id_roles = $_SESSION['id_roles'];
 
-$get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHERE loginid='".$_SESSION['user_id']."' and is_active='1' order by id desc ");
+$get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHERE is_active='1' order by id desc ");
 	
 //echo "<pre>";print_r($get_people);die;
 ?>
@@ -54,7 +54,7 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
 			<a href="add_technicianse.php" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Add Technicians</a>
           </div>
           <div class="widget-content nopadding">
-            <table class="table table-bordered data-table table-responsive-lg">
+            <table class="table table-bordered data-table table-responsive-lg" id="filtertable">
               <thead>
                 <tr>
                   <th>SNo</th>
@@ -88,10 +88,14 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
                   
 				  <td> <?php if($get_people[$emp]['is_active']==1){?>
                  <!--<a class="btn btn-danger" href="delete.php?id=<?php //echo base64_encode($fetch_people['id']);?>&action=people">Delete</a> -->
+					<?php if($_SESSION['id_roles']=="1"){?>
             		<a class="btn-harish btn-info-harish" href="edit_technicianse.php?id=<?php echo base64_encode($get_people[$emp]['id']);?>">Edit</a>
-                    <a onclick="Show_info('GetTechnicianDetails','<?=$get_people[$emp]['id'];?>');" class="btn-harish btn-info-harish" data-toggle="modal" data-target=".bs-example-modal-sm">View </a>
+                    <?php }?>
+					<a onclick="Show_info('GetTechnicianDetails','<?=$get_people[$emp]['id'];?>');" class="btn-harish btn-info-harish" data-toggle="modal" data-target=".bs-example-modal-sm">View </a>
                     <!--</br></br>-->
-                   <a class="btn-harish btn-info-harish" onclick="deleteTech('<?php echo base64_encode($get_people[$emp]["id"])?>')">Delete</a>
+					<?php if($_SESSION['id_roles']=="1"){?>
+						<a class="btn-harish btn-info-harish" onclick="deleteTech('<?php echo base64_encode($get_people[$emp]["id"])?>')">Delete</a>
+					<?php }?>	
                   	<?php } ?>
                   </td>
                 </tr>
@@ -104,7 +108,10 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
     </div>
   </div>
 </div>
-
+<?php
+	$filename= basename($_SERVER['REQUEST_URI'], '?' . $_SERVER['QUERY_STRING']);
+	require_once ('filtertable.php');
+?>
 <!--Footer-part-->
 <div class="row-fluid">
   <div id="footer" class="span12"> 2019 &copy; Gtrac. All Rights Reserved. </div>

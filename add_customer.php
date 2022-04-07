@@ -3,6 +3,12 @@ include('inc/header.php');
 
 $user_id = $_SESSION['user_id'];
 
+if($_SESSION['id_roles']==""){?>
+	<script>
+		window.location.href="view_customer.php";
+	</script>
+<?php }
+
 function googlatlang($address)
 {
 	$url = "https://maps.googleapis.com/maps/api/geocode/json?address=$address&key=AIzaSyCMj-azrdqWrM3CypbBoVobpSg7XkUMKHA";
@@ -25,19 +31,70 @@ function googlatlang($address)
 
 if (isset($_POST['save_people'])) {
 	
-	//echo "<pre>";print_r($_POST);die;
-	
+	// echo "<pre>";print_r($_POST);die;
+	if (isset($_FILES["myFile"])) {
+		$filepath = $_FILES['myFile']['tmp_name'];
+		$fileSize = filesize($filepath);
+		$fileinfo = finfo_open(FILEINFO_MIME_TYPE);
+		$filetype = finfo_file($fileinfo, $filepath);
+
+		if ($fileSize === 0) {
+			echo "<script>window.location.href='add_customer.php'</script>";
+			// echo "filesize";
+			$_SESSION['fileError'] = 'set';
+		}
+
+		if ($fileSize > 3145728) { // 3 MB (1 byte * 1024 * 1024 * 3 (for 3 MB))
+			echo "<script>window.location.href='add_customer.php'</script>";
+			// echo "size";
+			$_SESSION['fileSizeError'] = 'set';
+		}
+
+		$allowedTypes = [
+		   'image/png' => 'png',
+		   'image/jpeg' => 'jpg'
+		];
+
+		if (!in_array($filetype, array_keys($allowedTypes))) {
+			echo "<script>window.location.href='add_customer.php'</script>";
+			// echo "type";
+			$_SESSION['fileTypeError'] = 'set';
+		}
+
+		$filename = time().basename($filepath); // I'm using the original name here, but you can also change the name of the file here
+		$extension = $allowedTypes[$filetype];
+		$targetDirectory ="uploads"; // __DIR__ is the directory of the current PHP file
+
+		$newFilepath = $targetDirectory . "/" . $filename . "." . $extension;
+
+		if (!copy($filepath, $newFilepath)) { // Copy the file, returns false if failed
+			echo "<script>window.location.href='add_customer.php'</script>";
+			// echo "move";
+			$_SESSION['fileMoveError'] = 'set';
+		}
+		unlink($filepath); // Delete the temp file
+	}
+	// exit("data");
 	$name = $_POST['name'];
 	$number = $_POST['number'];
 	$organization_name = $_POST['organization_name'];
 	$cust_email_id = $_POST['cust_email_id'];
 	$aadhar_no = $_POST['aadhar_no'];
-	if($_POST['birth_date']==''){$birth_date = "0000-00-00";}else{$birth_date = $_POST['birth_date'];}	
+	if($_POST['birth_date']==''){
+		$birth_date = "0000-00-00";
+	}else{
+		$birth_date = $_POST['birth_date'];
+	}	
 	$gender = $_POST['gender'];
 	$document = $_POST['document'];
 	
-	$home_address = $_POST['home_address'];
-	if($_POST['home_pin_code']==''){$home_pin_code = "0";}else{$home_pin_code = $_POST['home_pin_code'];}	
+	$home_address = $_POST['home_address'][0];
+	if($_POST['home_pin_code'][0]==''){
+		$home_pin_code = "0";
+	}else{
+		$home_pin_code = $_POST['home_pin_code'][0];
+	}
+	
 	$ofy_address = $_POST['ofy_address'];
 	if($_POST['ofy_pin_code']==''){$ofy_pin_code = "0";}else{$ofy_pin_code = $_POST['ofy_pin_code'];}
 	
@@ -52,7 +109,7 @@ if (isset($_POST['save_people'])) {
 	if($_POST['from_date']==''){$from_date = "0000-00-00";}else{$from_date = $_POST['from_date'];}
 	if($_POST['to_date']==''){$to_date = "0000-00-00";}else{$to_date = $_POST['to_date'];}
 	
-	//if($_POST['amc_date']==''){$amc_date = "0000-00-00";}else{$amc_date = $_POST['amc_date'];}
+	// if($_POST['amc_date']==''){$amc_date = "0000-00-00";}else{$amc_date = $_POST['amc_date'];}
 		
 	$total_purchase = $_POST['total_purchase'];	
 	$amount_recd_adv = $_POST['amount_recd_adv'];		
@@ -60,7 +117,7 @@ if (isset($_POST['save_people'])) {
 	//echo "<pre>";print_r($_POST);die;
 	
 	$chkEmp = select_query("SELECT * FROM $db_name.customer_details WHERE phone_no='".$number."' AND is_active='1' AND loginid='".$_SESSION['user_id']."' ");
-	//echo "<pre>";print_r($chkEmp);die;
+	// echo "<pre>";print_r($chkEmp);die;
 	
 	if(count($chkEmp)>0)
 	{
@@ -98,26 +155,30 @@ if (isset($_POST['save_people'])) {
 			
 		}
 		
-		$home_locationcheck = select_query("SELECT * from $db_name.location WHERE location like '".$home_address."%' LIMIT 1");
+		for($ar=0;$ar<count($_POST["home_address"]);$ar++)
+		{
+			$loop_home_address= $_POST['home_address'][$ar];
+			$home_locationcheck = select_query("SELECT * from $db_name.location WHERE location like '".$loop_home_address."%' LIMIT 1");
+			
+			if(count($home_locationcheck) > 0){
+				
+				$home_lat = $home_locationcheck[0]['latitude'];
+				$home_lng = $home_locationcheck[0]['longitude'];
+			
+			} else{
+				
+				$hm_address=str_replace(' ', '%20',$loop_home_address);
+				
+				$home_latlng = googlatlang($hm_address);
+				$splithomelatlng = explode("@", $home_latlng);
 		
-		if(count($home_locationcheck) > 0){
-			
-			$home_lat = $home_locationcheck[0]['latitude'];
-			$home_lng = $home_locationcheck[0]['longitude'];
-		
-		} else{
-			
-			$hm_address=str_replace(' ', '%20',$home_address);
-			
-			$home_latlng = googlatlang($hm_address);
-			$splithomelatlng = explode("@", $home_latlng);
-	
-			$home_lat = (float)$splithomelatlng[0];
-			$home_lng = (float)$splithomelatlng[1];
-			
-			$insert_home_lat_long = array('latitude' => $home_lat , 'longitude' => $home_lng, 'location' => $home_address, 'phone_no' => $number);
-			$insert_home_loc = insert_query($db_name.'.location', $insert_home_lat_long);
-						
+				$home_lat = (float)$splithomelatlng[0];
+				$home_lng = (float)$splithomelatlng[1];
+				
+				$insert_home_lat_long = array('latitude' => $home_lat , 'longitude' => $home_lng, 'location' => $loop_home_address, 'phone_no' => $number);
+				$insert_home_loc = insert_query($db_name.'.location', $insert_home_lat_long);
+							
+			}
 		}
 		
 		/*$create_people = mysql_query("INSERT INTO people SET name = '".$name."', level = '".$level."', branch= '".$branch."', number= '".$number."',email= '".$email."',  user_id = '".$user_id."', status = '1', date = '".$current_date."'");*/
@@ -129,31 +190,35 @@ if (isset($_POST['save_people'])) {
 		'home_longitude' => $home_lng, 'ofy_address' => $ofy_address,  'ofy_pin_code' => $ofy_pin_code , 'ofy_latitude' => $lat, 
 		'ofy_longtitude' => $lng, 'amc_tenure_from' => $from_date, 'amc_tenure_to' => $to_date, 'amc_no_of_service' => $amc_service, 
 		'model_purchased' => $model_purchased, 'serial_no' => $serial_number, 'warranty_month' => $warranty_month, 'email_id' => $cust_email_id,
-		'total_purchase_amount' => $total_purchase, 'amount_recd_advance' => $amount_recd_adv, 'loginid' =>$_SESSION['user_id']));
+		'total_purchase_amount' => $total_purchase, 'amount_recd_advance' => $amount_recd_adv, 'loginid' =>$_SESSION['user_id'], 'aadhar_img'=> $newFilepath));
 	
-	//echo $insert_query;//echo "<br/>";
+	// echo $insert_query;//echo "<br/>";
+	// exit;
 	if($insert_query != "")
 	{	
+		// echo "<pre>";
+		// print_r($_POST['home_pin_code']);
+		// exit;
 		for($ar=0;$ar<count($_POST["model_purchased"]);$ar++)
 		{			
 			$insert_model = insert_query($db_name.'.customer_model_master', array('cust_id' => $insert_query, 'customer_id' => $jobId, 
-			'model_purchased' => $_POST['model_purchased'][$ar], 'serial_no' => $_POST['serial_number'][$ar], 'loginid' =>$_SESSION['user_id']));
+			'model_purchased' => $_POST['model_purchased'][$ar], 'serial_no' => $_POST['serial_number'][$ar], 'home_address'=>$_POST['home_address'][$ar],'home_pin_code'=>$_POST['home_pin_code'][$ar], 'loginid' =>$_SESSION['user_id']));
 			
 			//echo $insert_model;//echo "<br/>";
 		}
 	}
-	
+	// exit("enter the required");
 	
 	if($insert_query) {
-
-			echo "<script>window.location.href='view_customer.php'</script>";
+		$_SESSION['success_msg'] = 'insert';
+		echo "<script>window.location.href='view_customer.php'</script>";
 	
-			$_SESSION['success_msg'] = 'set';
+			
 		
 	}
 	
   }
-
+// exit("data");
 }
 ?>
 <div id="content">
@@ -170,7 +235,7 @@ if (isset($_POST['save_people'])) {
             <h5>Add Customers</h5>
           </div>
           <div class="widget-content nopadding">
-            <form name="myForm" id="myForm" action="" method="post" class="form-horizontal" autocomplete="off">
+            <form name="myForm" id="myForm" action="" method="post" class="form-horizontal" autocomplete="off" enctype="multipart/form-data">
               <div class="alert alert-error error_display" style="display:none">
                 <button class="close" data-dismiss="alert">x</button>
                 <strong class="error_submission">Error!</strong><span id="print_err"></span>
@@ -186,9 +251,27 @@ if (isset($_POST['save_people'])) {
                 <button class="close" data-dismiss="alert">x</button>
                 <strong class="error_submission">Error!</strong><span> Technician Phone No Already Exist. </span>
 			  </div>
-			  <?php } 
-			  unset($_SESSION['success_msg']);
-			  unset($_SESSION['unsuccess_msg']);				
+			  <?php }else if(isset($_SESSION['fileError'])) {  ?>
+				<div class="alert alert-error error_display">
+                <button class="close" data-dismiss="alert">x</button>
+                <strong class="error_submission">Error!</strong><span> Aadhar file is required... </span>
+			  </div>
+			  <?php }else if(isset($_SESSION['fileSizeError'])) {  ?>
+				<div class="alert alert-error error_display">
+                <button class="close" data-dismiss="alert">x</button>
+                <strong class="error_submission">Error!</strong><span> Aadhar file is too heavy... </span>
+			  </div>
+			  <?php }else if(isset($_SESSION['fileTypeError'])) {  ?>
+				<div class="alert alert-error error_display">
+                <button class="close" data-dismiss="alert">x</button>
+                <strong class="error_submission">Error!</strong><span> Aadhar file should be PNG or JPG format... </span>
+			  </div>
+			  <?php }
+				unset($_SESSION['success_msg']);
+				unset($_SESSION['unsuccess_msg']);
+				unset($_SESSION['fileError']);
+				unset($_SESSION['fileSizeError']);
+				unset($_SESSION['fileTypeError']);			  
 			  ?>
 			  
 			  <div class="control-group">
@@ -220,10 +303,12 @@ if (isset($_POST['save_people'])) {
               </div>
               
               <div class="control-group">
-                <label class="control-label">Aadhar Number:</label>
+                <label class="control-label">Aadhar Number:<font color="red">* </font></label>
                 <div class="controls">
                   <input type="text" name="aadhar_no" id="aadhar_no" class="mandatory" placeholder="Aadhar Number " value="<?=$aadhar_no;?>"/>
-                  <span id="branch_error"></span> </div>
+                  <span id="branch_error"></span><br>
+				  <input type="file" name="myFile">
+				</div>
               </div>              
                             
               <div class="control-group">
@@ -254,8 +339,8 @@ if (isset($_POST['save_people'])) {
               <div class="control-group">
                 <label class="control-label">Cold Room Adress:</label>
                 <div class="controls">
-                  <input type="text" name="home_address" id="autocomplete1" class="mandatory" placeholder="Address " value="<?=$home_address;?>"/>
-                  <input type="text" name="home_pin_code" id="home_pin_code" class="mandatory" placeholder="PIN Code" value="<?=$_POST['home_pin_code'];?>"/>
+                  <input type="text" name="home_address[]" id="autocomplete1" class="mandatory" placeholder="Address " value="<?=$home_address;?>"/>
+                  <input type="text" name="home_pin_code[]" id="home_pin_code" class="mandatory" placeholder="PIN Code" value="<?=$_POST['home_pin_code'];?>"/>
                   <span id="branch_error"></span> </div>
               </div>
               
@@ -300,13 +385,17 @@ if (isset($_POST['save_people'])) {
               
               <table id="dataTable" style="padding-left: 100px;width: 800px;" cellspacing="5" cellpadding="5">
                <tr>
-               	 <td colspan="2">   
+               	 <td colspan="4">   
                   <div class="control-group">
                       <label class="control-label"><font color="red">* </font></label>
                       <div class="controls">
                           <input type="text" name="model_purchased[]" id="model_purchased" class="mandatory" value="<?=$model_purchased?>" placeholder="Model Purchased " />
                           
                           <input type="text" name="serial_number[]" id="serial_number" class="mandatory" value="<?=$serial_number?>" placeholder="Serial Number " />
+						  
+							<input type="text" name="home_address[]" id="autocomplete1" class="mandatory" placeholder="Cool Room Address " value="<?=$home_address;?>"/>
+							
+							<input type="text" name="home_pin_code[]" id="home_pin_code" class="mandatory" placeholder="Cool Room PIN Code" value="<?=$_POST['home_pin_code'];?>"/>
                       <span id="branch_error"></span> </div> 
                   </div>
                   
@@ -364,7 +453,7 @@ if (isset($_POST['save_people'])) {
               </div>
               
               <div class="control-group">
-                <label class="control-label">AMC Tenure:</label>
+                <label class="control-label">AMC tenure :</label>
                 <div class="controls date form_date" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
                   <input class="mandatory date-picker" name="from_date" id="from_date" type="text" value="<?=$_POST['from_date'];?>" placeholder="From Date" readonly>
                   <span class="add-on"><i class="icon-th"></i></span>
@@ -378,14 +467,15 @@ if (isset($_POST['save_people'])) {
               
               
               
-              <!--<div class="control-group">
+            <!--<div class="control-group">
                 <label class="control-label">AMC Tenure:</label>
                 <div class="controls date form_date" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
-                  <input class="mandatory date-picker" name="amc_date" id="amc_date" type="text" value="<?=$_POST['amc_dates'];?>" placeholder="Date of AMC " readonly>
-                  <span class="add-on"><i class="icon-th"></i></span>
+                  <input class="mandatory date-picker" name="amc_date" id="amc_date" type="text" value="<?=$_POST['amc_date'];?>" placeholder="Date of AMC " readonly>
+                  <span class="add-on"><i class="icon-th"></i></span><br>
+				  <span id="amcError" style="color:#FF0000;display:none;">AMC start date should be equal to or greater than warranty end date</span>
                 </div>
                 
-              </div>-->
+            </div>-->
               
               <div class="control-group">
                 <label class="control-label">Total Purchase Amount:</label>
@@ -419,13 +509,44 @@ if (isset($_POST['save_people'])) {
 <script>
 	  
 $( document ).ready(function(){
+	// $(".save_step_1").click(function(){
+		// $("#amcError").hide();
+		//check to date is smaller then AMC Tenure:
+		// var toDate= $("#to_date").val();
+		// var amcDate= $("#amc_date").val();
+		// console.log("toDate="+toDate);
+		// console.log("amcDate="+amcDate);
+		// if(new Date(toDate) > new Date(amcDate))
+		// {
+			// alert("blabla");
+			// $("#print_err").html(" AMC start date should be equal to or greater than warranty end date");
+			// return false;
+		// }
+		
+	// });
+	// $("#to_date").change(function() {
+    // var date = $(this).val();
+    // console.log(date, 'change')
+// });
+	
+	
+// var today = new Date();
+// console.log("today="+today);
+// var dd = String(today.getDate()).padStart(2, '0');
+// var mm = String(today.getMonth() + 1).padStart(2, '0');
+// var yyyy = today.getFullYear();
 
+// today = yyyy + '-' + mm + '-' + dd;
+// $('#date_picker').attr('min',today);
 ////////////////////////// Validation ////////////////////////
 	
     $('.save_step_1').click(function(e) {
-		//alert('Hii');
+		// alert('Hii');
+		// return false;
 		var name = $("#name").val();
 		var number = $("#number").val();
+		var toDate= $("#to_date").val();
+		var amcDate= $("#amc_date").val();
 						
 		if( name == '' ) {
 			$(".error_display").css("display","block");
@@ -557,6 +678,15 @@ $( document ).ready(function(){
 			$(".error_display").css("display","none");
 		}
 		
+		if(new Date(toDate) > new Date(amcDate))
+		{
+			$(".error_display").css("display","block");
+			$("#print_err").html(" AMC start date should be equal to or greater than warranty end date");
+			return false;
+		}else{
+			$("#print_err").html("");
+			$(".error_display").css("display","none");
+		}
 		/*var total_purc = $("#total_purchase").val();
 						
 		if( total_purc == '' ) {
@@ -750,7 +880,8 @@ var place1 = autocomplete1.getPlace();
         forceParse: 0,
 		
     });
-
+	
+	
 </script>
 <SCRIPT language="javascript">
 	

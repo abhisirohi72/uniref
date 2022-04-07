@@ -13,26 +13,26 @@ if(isset($_POST["submit"]))
 	
 	if($startdate!='' && $Enddate!='')
 	{
-		$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and is_active='1' and (from_date BETWEEN '".$startdate."' AND '".$Enddate."') 
+		$WhereQuery="WHERE is_active='1' and (from_date BETWEEN '".$startdate."' AND '".$Enddate."') 
 		and (to_date BETWEEN '".$startdate."' AND '".$Enddate."') ";
 	} 
 	else if($startdate!='' && $Enddate=='')
 	{
-		$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and is_active='1' and (from_date BETWEEN '".$startdate."' AND '".$startdate."') ";
+		$WhereQuery="WHERE is_active='1' and (from_date BETWEEN '".$startdate."' AND '".$startdate."') ";
 	}
 	else if($startdate=='' && $Enddate!='')
 	{
-		$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and is_active='1' and (to_date BETWEEN '".$Enddate."' AND '".$Enddate."') ";
+		$WhereQuery="WHERE is_active='1' and (to_date BETWEEN '".$Enddate."' AND '".$Enddate."') ";
 	} 
 	else 
 	{
-		$WhereQuery = "WHERE loginid='".$_SESSION['user_id']."' and is_active='1' order by to_date desc,create_time desc limit 50 ";
+		$WhereQuery = "WHERE is_active='1' order by to_date desc,create_time desc limit 50 ";
 	}
 	
 }
 else
 {			
-	$WhereQuery = "WHERE loginid='".$_SESSION['user_id']."' and is_active='1' order by to_date desc,create_time desc limit 50 ";
+	$WhereQuery = "WHERE is_active='1' order by to_date desc,create_time desc limit 50 ";
 }
 
 $get_tech_leave_data = select_query("SELECT * FROM $db_name.push_notification ".$WhereQuery);
@@ -86,9 +86,10 @@ $get_tech_leave_data = select_query("SELECT * FROM $db_name.push_notification ".
           <div class="widget-title"> <span class="icon"><i class="icon-th"></i></span>
             <h5>All Technicians Notification</h5>
 			<a href="add_notification.php" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Add Notification</a>
+			<a href="download_excel.php?action=technicians_notification" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Export Excel</a>
           </div>
           <div class="widget-content nopadding">
-            <table class="table table-bordered data-table table-responsive-lg">
+            <table class="table table-bordered data-table table-responsive-lg" id="filtertable">
               <thead>
                 <tr>
                   <th>SNo</th>
@@ -125,7 +126,10 @@ $get_tech_leave_data = select_query("SELECT * FROM $db_name.push_notification ".
     </div>
   </div>
 </div>
-
+<?php
+	$filename= basename($_SERVER['REQUEST_URI'], '?' . $_SERVER['QUERY_STRING']);
+	require_once ('filtertable.php');
+?>
 <!--Footer-part-->
 <div class="row-fluid">
   <div id="footer" class="span12"> 2019 &copy; Gtrac. All Rights Reserved. </div>

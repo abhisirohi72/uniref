@@ -30,15 +30,19 @@ function dateDifference($date1, $date2)
    return $months;
 
 }
+$subUserCond= "";
+if($_SESSION['id_roles']=="2"){
+	$subUserCond= " OR loginid='".$_SESSION['admin_user_id']."'"; 
+}
 
-$get_Latest_data = select_query("SELECT * FROM $db_name.cust_push_notification WHERE loginid='".$_SESSION['user_id']."' and is_active='1' order by to_date desc,create_time desc limit 8");
+$get_Latest_data = select_query("SELECT * FROM $db_name.cust_push_notification WHERE loginid='".$_SESSION['user_id']."' $subUserCond and is_active='1' order by to_date desc,create_time desc limit 8");
 	
 //echo "<pre>";print_r($get_Latest_data);die;
 
-$get_Complaints_data = select_query("SELECT * FROM $db_name.push_notification WHERE loginid='".$_SESSION['user_id']."' and is_active='1' order by to_date desc,create_time desc limit 10");
+$get_Complaints_data = select_query("SELECT * FROM $db_name.push_notification WHERE loginid='".$_SESSION['user_id']."' $subUserCond and is_active='1' order by to_date desc,create_time desc limit 10");
 //echo "<pre>";print_r($get_Complaints_data);die;
-
-$get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE loginid='".$_SESSION['user_id']."' and is_active='1' order by id desc ");
+// echo "SELECT * FROM $db_name.customer_details WHERE loginid='".$_SESSION['user_id']."' and is_active='1' order by id desc ";
+$get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE loginid='".$_SESSION['user_id']."' $subUserCond and is_active='1' order by id desc ");
 //echo "<pre>";print_r($get_customer);die;
 ?>
 
@@ -109,7 +113,7 @@ $get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE logi
                       <tbody>
                         <?php 
                         $todaydate = date('Y-m-d');
-                        
+                        $amc_month = 0;
                         for($amc=0;$amc<count($get_customer);$amc++) { 
                         
                         if($get_customer[$amc]['date_of_installation'] != '0000-00-00' && $get_customer[$amc]['date_of_installation'] != '')
@@ -119,24 +123,35 @@ $get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE logi
                         } else {
                             $installationDate = '';
                         }
-                        
+                        // echo $installationDate."<br>";
                         $no_of_month = 12;
                         
                         $amc_no_of_service = $get_customer[$amc]['amc_no_of_service'];
                         
                         $amc_month = $no_of_month/$amc_no_of_service;
-                        
+                        // exit;
                         if($installationDate != "")
                         {
-                            
                             $monthdiff = dateDifference($get_customer[$amc]['date_of_installation'], $todaydate);
                             
-                            if($monthdiff >= 0 && $monthdiff < $amc_month){ $addmonth = $amc_month;}
-                            else if($monthdiff >= $amc_month && $monthdiff < ($amc_month*2)){ $addmonth = ($amc_month*2);}
-                            else if($monthdiff >= ($amc_month*2) && $monthdiff < ($amc_month*3)){ $addmonth = ($amc_month*3);}
-                            else if($monthdiff >= ($amc_month*3) && $monthdiff < ($amc_month*4)){ $addmonth = ($amc_month*4);}
-                            else if($monthdiff >= ($amc_month*4) && $monthdiff < ($amc_month*5)){ $addmonth = ($amc_month*5);}
-                            else if($monthdiff >= ($amc_month*5) && $monthdiff < ($amc_month*6)){ $addmonth = ($amc_month*6);}
+                            if($monthdiff >= 0 && $monthdiff < $amc_month){ 
+                              $addmonth = $amc_month;
+                            }
+                            else if($monthdiff >= $amc_month && $monthdiff < ($amc_month*2)){
+                              $addmonth = ($amc_month*2);
+							}
+                            else if($monthdiff >= ($amc_month*2) && $monthdiff < ($amc_month*3)){
+								$addmonth = ($amc_month*3);
+							}
+                            else if($monthdiff >= ($amc_month*3) && $monthdiff < ($amc_month*4)){
+								$addmonth = ($amc_month*4);
+							}
+                            else if($monthdiff >= ($amc_month*4) && $monthdiff < ($amc_month*5)){ 		
+								$addmonth = ($amc_month*5);
+							}
+                            else if($monthdiff >= ($amc_month*5) && $monthdiff < ($amc_month*6)){
+								$addmonth = ($amc_month*6);
+							}
                             
                             $effectiveDate = date('Y-m-d', strtotime("+".$addmonth." months", strtotime($get_customer[$amc]['date_of_installation'])));
                             
@@ -151,7 +166,7 @@ $get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE logi
                           <td><?php echo $get_customer[$amc]['model_purchased']; ?></td>
                           <td><?php echo $get_customer[$amc]['serial_no']; ?></td>
                           <!--<td><?php echo $installationDate;?></td> -->
-                          <td><?php echo $nextAMCDate;?></td>                                      
+                          <td span="<?php echo $amc_month; ?>" service="<?php echo $amc_no_of_service; ?>" monthdiff="<?php echo $monthdiff; ?>"><?php echo $nextAMCDate;?></td>                                      
                         </tr>
                         <?php } ?>         
                       </tbody>

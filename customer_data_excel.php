@@ -48,7 +48,7 @@ $login_id = $_REQUEST['login_id'];
 
 
  
-$get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE loginid='".$login_id."' and is_active='1' order by id desc ");
+$get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE  is_active='1' order by id desc ");
 
 //echo "<pre>";print_r($get_customer);die;
 

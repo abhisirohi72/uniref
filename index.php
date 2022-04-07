@@ -19,7 +19,14 @@ if(count($query_people)>0){
 	$_SESSION['id_roles']=$query_people[0]['id_roles'];
 	$_SESSION['company']=$query_people[0]['username'];
 	$_SESSION['active_status']=$query_people[0]['active_status'];
-	
+	if($_SESSION['id_roles']=="2"){
+		$_SESSION['admin_user_id']="";
+		//get admin userid
+		$getAdminDetails= select_query("SELECT id FROM 	login_details WHERE id_roles = 1 ORDER BY id ASC LIMIT 1");
+		if(count($getAdminDetails)>0){
+			$_SESSION['admin_user_id']= $getAdminDetails[0]['id'];
+		}
+	}
 	if($query_people[0]['id_roles']==1){
 	
 		header('Location: amc_reminder.php');

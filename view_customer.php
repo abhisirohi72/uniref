@@ -32,7 +32,7 @@ function dateDifference($date1, $date2)
 
 }
 
-$get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE loginid='".$_SESSION['user_id']."' and is_active='1' order by id desc ");
+$get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE  is_active='1' order by id desc ");
 	
 //echo "<pre>";print_r($get_customer);die;
 ?>
@@ -79,10 +79,12 @@ $get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE logi
                     <button type="submit" name="submit" class="btn-harish btn-info-harish" style="float:right" value="CustomerDataExcel"><i class="fa fa-download"></i> Export Excel </button>
                 </div>
               </form>
-			<a href="add_customer.php" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Add Customers</a>
+			  <?php //if($_SESSION['id_roles']=="1"){?>
+				<a href="add_customer.php" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Add Customers</a>
+			  <?php //}?>
           </div>
           <div class="widget-content nopadding">
-            <table class="table table-bordered data-table table-responsive-lg">
+            <table class="table table-bordered data-table table-responsive-lg" id="filtertable">
               <thead>
                 <tr>
                   <th>SNo</th>
@@ -98,7 +100,9 @@ $get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE logi
                   <th>Warranty In Months</th>
                   <th>Next AMC Month</th>
                   <th>Details</th>
+				  <?php if($_SESSION['id_roles']=="1"){?>
 				  <th>Actions</th>
+				  <?php }?>
                 </tr>
               </thead>
               <tbody>
@@ -164,7 +168,7 @@ $get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE logi
                     <a onclick="Show_info('GetCustomerDetails','<?=$get_customer[$emp]['id'];?>');" class="btn-harish btn-info-harish" data-toggle="modal" data-target=".bs-example-modal-sm">View </a>
                   	<?php } ?>
                   </td>
-                  
+                  <?php if($_SESSION['id_roles']=="1"){?>
 				  <td> <?php if($get_customer[$emp]['is_active']==1){?>
             		<?php if($get_customer[$emp]['model_purchased'] == ""){?>
                     <a class="btn-harish btn-info-harish" href="edit_customer.php?action=editapp&id=<?php echo base64_encode($get_customer[$emp]['id']);?>">Edit</a>
@@ -175,6 +179,7 @@ $get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE logi
                    <a class="btn-harish btn-info-harish" onclick="deleteCustomer('<?php echo base64_encode($get_customer[$emp]["id"])?>')">Delete</a>
                   	<?php } ?>
                   </td>
+				  <?php }?>
                 </tr>
                 <?php } ?>         
               </tbody>
@@ -185,7 +190,10 @@ $get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE logi
     </div>
   </div>
 </div>
-
+<?php
+	$filename= basename($_SERVER['REQUEST_URI'], '?' . $_SERVER['QUERY_STRING']);
+	require_once ('filtertable.php');
+?>
 <!--Footer-part-->
 <div class="row-fluid">
   <div id="footer" class="span12"> 2019 &copy; Gtrac. All Rights Reserved. </div>

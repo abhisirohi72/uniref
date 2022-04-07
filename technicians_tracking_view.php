@@ -85,7 +85,7 @@ else
 }
 
 
-$get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHERE loginid='".$_SESSION['user_id']."' and is_active='1' order by id  ");
+$get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHERE is_active='1' order by id  ");
 	
 //echo "<pre>";print_r($get_people);die;
 ?>
@@ -150,10 +150,10 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
 		<div class="widget-box">
           <div class="widget-title"> <span class="icon"><i class="icon-th"></i></span>
             <h5>Technicians Tracking Day Record</h5>
-			<!--<a href="add-request-job.php" style="float:right; margin:3px;" class="btn btn-info">Add Job Request</a>-->
+			<a href="download_excel.php?action=technicians_tracking_view" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Export Excel</a>
           </div>
           <div class="widget-content nopadding">
-            <table class="table table-bordered data-table table-responsive-lg"><!-- class="table table-bordered data-table"-->
+            <table class="table table-bordered data-table table-responsive-lg" id="filtertable"><!-- class="table table-bordered data-table"-->
               <thead>
                 <tr>
                     <th>Sr No.</th>
@@ -211,7 +211,10 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
   </div>
   
 </div>
-
+<?php
+	$filename= basename($_SERVER['REQUEST_URI'], '?' . $_SERVER['QUERY_STRING']);
+	require_once ('filtertable.php');
+?>
 <!--Footer-part-->
 <div class="row-fluid">
   <div id="footer" class="span12"> <?php echo date('Y');?> &copy; Gtrac. All Rights Reserved. </div>

@@ -3,19 +3,19 @@ ini_set('display_errors', 1);
 ob_start();
 date_default_timezone_set ("Asia/Calcutta");
 
-define('__SITE_URL', 'http://203.115.101.55/uniRefBackend');
-//define('__SITE_URL', 'http://localhost/uniRefBackend');
+// define('__SITE_URL', 'http://203.115.101.55/uniRefBackend');
+define('__SITE_URL', 'http://localhost/uniref');
 //define('__SITE_URL', 'http://192.168.1.24/uniRefBackend');
 
 define('__DOCUMENT_ROOT', 'C:/xampp/htdocs/uniRefBackend');
 //define('__DOCUMENT_ROOT', 'D:/xampp/htdocs/uniRefBackend');
 
-$db_name = "uniref_system";
+$db_name = "new_uniref";
 
 $hostname2 = "203.115.101.54";
 $username2 = "gtrac";
 $password2 = "gtrac123";
-$databasename2 = "uniref_system";
+$databasename2 = "new_uniref";
 
 //$image_path = 'http://localhost/uniRefSystemAPIV1';
 //$image_path = 'http://192.168.1.93/uniRefSystemAPIV1';
@@ -35,11 +35,11 @@ function getcountRow($query)
 	$hostname2 = "203.115.101.54";
 	$username2 = "gtrac";
 	$password2 = "gtrac123";
-	$databasename2 = "uniref_system";
+	$databasename2 = "new_uniref";
 	
 	$dblink2 = @mysql_connect($hostname2,$username2,$password2) ;
 	
-	$Numberofservice = mysql_query($query);
+	$Numberofservice = mysql_query($query)or die(mysql_error($dblink2));;
 	$count=mysql_num_rows($Numberofservice);
 	return $count;
 }
@@ -50,14 +50,14 @@ function select_query($query,$condition=0)
 	$hostname2 = "203.115.101.54";
 	$username2 = "gtrac";
 	$password2 = "gtrac123";
-	$databasename2 = "uniref_system";
+	$databasename2 = "new_uniref";
 	
 	$dblink2 = @mysql_connect($hostname2,$username2,$password2) ;
 	
 	if($condition==1){
 		//echo "<br>".$query."<br>";
 	}
-	$qry=@mysql_query($query); 
+	$qry=mysql_query($query)or die(mysql_error($dblink2));; 
 	
 	$num=@mysql_num_rows($qry);
 	$num_field=@mysql_num_fields($qry);
@@ -83,7 +83,7 @@ function insert_query($table_name, $form_data)
     $hostname2 = "203.115.101.54";
     $username2 = "gtrac";
     $password2 = "gtrac123";
-    $databasename2 = "uniref_system";
+    $databasename2 = "new_uniref";
    
     $dblink2 = @mysql_connect($hostname2,$username2,$password2) ;
 
@@ -96,7 +96,7 @@ function insert_query($table_name, $form_data)
     VALUES('".implode("','", $form_data)."')";
  
     // run and return the query result resource
-    $insert = mysql_query($sql,$dblink2);
+    $insert = mysql_query($sql,$dblink2) or die(mysql_error($dblink2));
     //return $sql;
 	return mysql_insert_id();
 }
@@ -108,7 +108,7 @@ function update_query($table_name,$form_data,$condition)
     $hostname2 = "203.115.101.54";
     $username2 = "gtrac";
     $password2 = "gtrac123";
-    $databasename2 = "uniref_system";
+    $databasename2 = "new_uniref";
    
     $dblink2 = @mysql_connect($hostname2,$username2,$password2) ;
 
@@ -129,7 +129,7 @@ function update_query($table_name,$form_data,$condition)
      $sql = "UPDATE ".$table_name." SET ". join(', ', $fields) ." WHERE ".join(' and ', $cond);
       
     // run and return the query result resource
-    $update = mysql_query($sql,$dblink2);
+    $update = mysql_query($sql,$dblink2)or die(mysql_error($dblink2));
     return $sql;
 	//return $update;
 }

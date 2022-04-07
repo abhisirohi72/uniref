@@ -78,17 +78,18 @@ function array_msort($array, $cols)
 }
 
 $req_id = base64_decode($_REQUEST['id']);
-
-
-$get_edit_recd = select_query("SELECT * FROM $db_name.all_job_details WHERE id='".$req_id."' and loginid='".$_SESSION['user_id']."' ");
+// echo $db_name;
+// exit();
+// echo "SELECT * FROM $db_name.all_job_details WHERE id='".$req_id."' and loginid='".$_SESSION['user_id']."' ";
+$get_edit_recd = select_query("SELECT * FROM $db_name.all_job_details WHERE id='".$req_id."' ");
 //echo "<pre>";print_r($get_edit_recd);die;
 
 $get_cust_recd_edit = select_query("SELECT id,concat(name,'##',cust_id) as cust_id,concat(company_name,' / ',cust_id) as cust_name,
-			  company_name, phone_no FROM $db_name.customer_details WHERE is_active='1' and loginid='".$_SESSION['user_id']."' and cust_id='".$get_edit_recd[0]['customer_id']."' ");
+			  company_name, phone_no FROM $db_name.customer_details WHERE is_active='1' and cust_id='".$get_edit_recd[0]['customer_id']."' ");
 
 
 $get_tech_recd_edit = select_query("SELECT id,concat(emp_name,' / ',mobile_no) as tech_name,mobile_no  FROM $db_name.technicians_login_details
- 			WHERE is_active='1' and loginid='".$_SESSION['user_id']."' and id='".$get_edit_recd[0]['to_technician']."'");
+ 			WHERE is_active='1' and id='".$get_edit_recd[0]['to_technician']."'");
 	
 
 if (isset($_POST['save_people'])) {
@@ -122,12 +123,16 @@ if (isset($_POST['save_people'])) {
 		$priority_type = "High";
 		
 	} else {
-	
-		$symptom = $_POST['symptom'];
+		$sympton_change_to_string= implode("~||~",$_POST['symptom']);
+		$symptom = $sympton_change_to_string;
 		$priority_type = $_POST['priority_type'];
 	
 	}
-	
+	// echo $symptom;
+	// exit();
+	// echo "<pre>";
+	// print_r($_POST);
+	// exit();
 	
 	//$priority_type = $_POST['priority_type'];
 	//$cubic_ft = $_POST['cubic_ft'];
@@ -183,13 +188,13 @@ if (isset($_POST['save_people'])) {
 	if($cust_id != $get_edit_recd[0]['customer_id'])
 	{
 		$getCustId = select_query("SELECT id,cust_id,name,amc_service_done FROM $db_name.customer_details where cust_id='".$cust_id."' and 
-		is_active='1' and loginid='".$_SESSION['user_id']."' ");
+		is_active='1' ");
 		//echo "<pre>";print_r($getCustId);die;
 		$jobId = "M".date("dmy")."0".$getCustId[0]['id']."FR".($getCustId[0]['amc_service_done']+1);
 		
 		$update_warranty = array('date_of_installation' => $req_date);
 			
-		$condition = array('id' => $getCustId[0]['id'], 'loginid' => $_SESSION['user_id'], 'is_active' => 1);            
+		$condition = array('id' => $getCustId[0]['id'], 'is_active' => 1);            
 		update_query($db_name.'.customer_details', $update_warranty, $condition);
 		
 	} else {
@@ -204,9 +209,9 @@ if (isset($_POST['save_people'])) {
 	'serial_no' => $serial_no, 'symptom' => $symptom, 'work_type' => $work_type, 'priority_type' => $priority_type, 
 	'customer_email_id' => $cust_email_id, 'customer_phone_no' => $cust_phone_no,
 	'amount_to_be_collected' => $amount_to_be_collected, 'total_working_hrs_req' => $total_working_hrs,
-	'job_assign_time' => date("Y-m-d H:i:s"),  'job_status' => 0,  'loginid' => $_SESSION['user_id']);
+	'job_assign_time' => date("Y-m-d H:i:s"),  'job_status' => 0);
 			
-	$condition = array('id' => $req_id, 'is_active' => 1, 'loginid' => $_SESSION['user_id']);            
+	$condition = array('id' => $req_id, 'is_active' => 1);            
 	$result = update_query($db_name.'.all_job_details', $update_array, $condition);
 	
 	
@@ -293,7 +298,7 @@ if (isset($_POST['save_people'])) {
 			  company_name, phone_no FROM $db_name.customer_details WHERE is_active='1' and loginid='".$_SESSION['user_id']."'");*/
 			  
 			  $get_tech_recd = select_query("SELECT id,concat(emp_name,' / ',mobile_no) as tech_name,mobile_no  FROM 
-			  $db_name.technicians_login_details WHERE is_active='1' and loginid='".$_SESSION['user_id']."'");
+			  $db_name.technicians_login_details WHERE is_active='1'");
 			  
 			  $get_Symptom = select_query("SELECT * FROM $db_name.symptoms_tbl WHERE is_active='1' ");
 			  
@@ -416,7 +421,7 @@ if (isset($_POST['save_people'])) {
               </div>
               
               <? $get_model = select_query("SELECT * FROM $db_name.customer_model_master WHERE customer_id='".$get_edit_recd[0]['customer_id']."' 
-			  and is_active='1' and  loginid='".$_SESSION['user_id']."' "); ?>
+			  and is_active='1' "); ?>
               
               <div class="control-group">
                 <label class="control-label">Model Number:<font color="red">* </font></label>
@@ -440,11 +445,16 @@ if (isset($_POST['save_people'])) {
               
               <div class="control-group" id="Symptom_show" style="display:none">
                 <label class="control-label">Symptom:<font color="red">* </font></label>
+				<?php 
+				//break the sympton and create in an array
+				$getSymptonArray= explode("~||~", $get_edit_recd[0]['symptom']);
+				
+				?>
                 <div class="controls">
-                  <select name="symptom" id="symptom" class="form-control">
-                      <option value="">Select Symptom</option>
+                  <select name="symptom[]" multiple id="symptom" class="form-control" size="5" style="width:300px;">
+                      <option value="" disable="disable">Select Symptom</option>
                       <? for($sym=0;$sym<count($get_Symptom);$sym++) { ?>
-                      <option value="<?=$get_Symptom[$sym]['sym_name'];?>" <?php if($get_edit_recd[0]['symptom'] == $get_Symptom[$sym]['sym_name'] ) { echo "selected='selected'";}?>><?=$get_Symptom[$sym]['sym_name'];?></option>
+                      <option value="<?=$get_Symptom[$sym]['sym_name'];?>" <?php if(in_array($get_Symptom[$sym]['sym_name'],$getSymptonArray) ) { echo "selected='selected'";}?>><?=$get_Symptom[$sym]['sym_name'];?></option>
                       <? } ?>
                   </select>
                   <span id="branch_error"></span> </div>
@@ -629,6 +639,7 @@ $( document ).ready(function(){
 		}
 		
 		var serial_no = $("#serial_no").val();
+		console.log(serial_no);
 		if( serial_no == '' ) {
 			$(".error_display").css("display","block");
 			$("#print_err").html(" Please Enter Serial Number.");

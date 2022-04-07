@@ -15,8 +15,7 @@ if($_REQUEST['action'] == 'userDetails')
 	$cust_name = $cust_nameSplit[0];
 	$cust_id = $cust_nameSplit[1];
 	
-	$get_edit_recd = select_query("SELECT * FROM $db_name.customer_details WHERE cust_id='".$cust_id."' and is_active='1' and 
-	loginid='".$_SESSION['user_id']."' ");
+	$get_edit_recd = select_query("SELECT * FROM $db_name.customer_details WHERE cust_id='".$cust_id."' and is_active='1' ");
 	
 	echo $get_edit_recd[0]['phone_no'].'##'.$get_edit_recd[0]['email_id'];
 			 
@@ -33,8 +32,7 @@ if($_REQUEST['action'] == 'getModelname')
 	$cust_name = $cust_nameSplit[0];
 	$cust_id = $cust_nameSplit[1];
 	
-	$get_model = select_query("SELECT * FROM $db_name.customer_model_master WHERE customer_id='".$cust_id."' and is_active='1' and 
-	loginid='".$_SESSION['user_id']."' ");
+	$get_model = select_query("SELECT * FROM $db_name.customer_model_master WHERE customer_id='".$cust_id."' and is_active='1' ");
 	
 	if(count($get_model)>0)
 	{
@@ -70,7 +68,7 @@ if($_REQUEST['action'] == 'getSerialno')
 	$cust_id = $cust_nameSplit[1];
 	
 	$get_Serialno = select_query("SELECT * FROM $db_name.customer_model_master WHERE customer_id='".$cust_id."' and 
-	model_purchased='".$model."' and is_active='1' and  loginid='".$_SESSION['user_id']."' ");
+	model_purchased='".$model."' and is_active='1' ");
 	
 	echo $get_Serialno[0]['serial_no'];
 			 

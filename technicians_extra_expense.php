@@ -13,25 +13,25 @@ if(isset($_POST["submit"]))
 	
 	if($startdate!='' && $Enddate!='')
 	{
-		$WhereQuery="WHERE login_id='".$_SESSION['user_id']."' and is_active='1' and (req_date BETWEEN '".$startdate."' AND '".$Enddate."') ";
+		$WhereQuery="WHERE is_active='1' and (req_date BETWEEN '".$startdate."' AND '".$Enddate."') ";
 	} 
 	else if($startdate!='' && $Enddate=='')
 	{
-		$WhereQuery="WHERE login_id='".$_SESSION['user_id']."' and is_active='1' and (req_date BETWEEN '".$startdate."' AND '".$startdate."') ";
+		$WhereQuery="WHERE is_active='1' and (req_date BETWEEN '".$startdate."' AND '".$startdate."') ";
 	}
 	else if($startdate=='' && $Enddate!='')
 	{
-		$WhereQuery="WHERE login_id='".$_SESSION['user_id']."' and is_active='1' and (req_date BETWEEN '".$Enddate."' AND '".$Enddate."') ";
+		$WhereQuery="WHERE is_active='1' and (req_date BETWEEN '".$Enddate."' AND '".$Enddate."') ";
 	} 
 	else 
 	{
-		$WhereQuery = "WHERE login_id='".$_SESSION['user_id']."' and is_active='1' order by req_date desc limit 50 ";
+		$WhereQuery = "WHERE is_active='1' order by req_date desc limit 50 ";
 	}
 	
 }
 else
 {			
-	$WhereQuery = "WHERE login_id='".$_SESSION['user_id']."' and is_active='1' order by req_date desc limit 50 ";
+	$WhereQuery = "WHERE is_active='1' order by req_date desc limit 50 ";
 }
 
 //echo "SELECT * FROM $db_name.extra_expense_claim_tbl ".$WhereQuery;
@@ -86,10 +86,10 @@ $get_tech_extra_exp = select_query("SELECT * FROM $db_name.extra_expense_claim_t
 		<div class="widget-box">
           <div class="widget-title"> <span class="icon"><i class="icon-th"></i></span>
             <h5>All Technicians Extra Expense</h5>
-			<!--<a href="add_technicianse.php" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Add Technicians</a>-->
+			<a href="download_excel.php?action=technicians_extra_expense" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Export Excel</a>
           </div>
           <div class="widget-content nopadding">
-            <table class="table table-bordered data-table table-responsive-lg">
+            <table class="table table-bordered data-table table-responsive-lg" id="filtertable">
               <thead>
                 <tr>
                   <th>SNo</th>
@@ -100,7 +100,9 @@ $get_tech_extra_exp = select_query("SELECT * FROM $db_name.extra_expense_claim_t
                   <th>Bill Amount</th>
                   <th>Request Date</th>
                   <th>Approve/Disapprove</th>
+				  <?php if($_SESSION['id_roles']=="1"){?>
                   <th>Actions</th>
+				  <?php }?>
                 </tr>
               </thead>
               <tbody>
@@ -123,12 +125,13 @@ $get_tech_extra_exp = select_query("SELECT * FROM $db_name.extra_expense_claim_t
                   
                   <td><?php if( $get_tech_extra_exp[$emp]['approve_status'] == '1' ) { echo "Approve";} else if( $get_tech_extra_exp[$emp]['approve_status'] == '2' ) { echo "Reject";} else {echo "No Action";} ?></td>  
                                   
-                  
-				  <td> <?php if($get_tech_extra_exp[$emp]['approve_status']==0){?>
-                 	<a class="btn-harish btn-info-harish" onclick="expanseApprove('<?php echo base64_encode($get_tech_extra_exp[$emp]["id"])?>')">Approve</a> 
-                    <a class="btn-harish btn-info-harish" onclick="expanseReject('<?php echo base64_encode($get_tech_extra_exp[$emp]["id"])?>')">Reject</a>
-                  	<?php } ?>
-                  </td>
+					<?php if($_SESSION['id_roles']=="1"){?>
+						<td> <?php if($get_tech_extra_exp[$emp]['approve_status']==0){?>
+							<a class="btn-harish btn-info-harish" onclick="expanseApprove('<?php echo base64_encode($get_tech_extra_exp[$emp]["id"])?>')">Approve</a> 
+							<a class="btn-harish btn-info-harish" onclick="expanseReject('<?php echo base64_encode($get_tech_extra_exp[$emp]["id"])?>')">Reject</a>
+							<?php } ?>
+						</td>
+					<?php }?>	
                 </tr>
                 <?php } ?>         
               </tbody>
@@ -139,7 +142,10 @@ $get_tech_extra_exp = select_query("SELECT * FROM $db_name.extra_expense_claim_t
     </div>
   </div>
 </div>
-
+<?php
+	$filename= basename($_SERVER['REQUEST_URI'], '?' . $_SERVER['QUERY_STRING']);
+	require_once ('filtertable.php');
+?>
 <!--Footer-part-->
 <div class="row-fluid">
   <div id="footer" class="span12"> 2019 &copy; Gtrac. All Rights Reserved. </div>

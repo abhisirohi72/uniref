@@ -2,9 +2,8 @@
 session_start();
 include('inc/header.php'); 
 
-$id_roles = $_SESSION['id_roles'];
 
-$get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHERE loginid='".$_SESSION['user_id']."' and is_active='1' order by id desc ");
+$get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHERE is_active='1' order by id desc ");
 	
 //echo "<pre>";print_r($get_people);die;
 ?>
@@ -45,9 +44,10 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
 		<div class="widget-box">
           <div class="widget-title"> <span class="icon"><i class="icon-th"></i></span>
             <h5>All Technicians Service History</h5>
+			<a href="download_excel.php?action=technicians_job_history" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Export Excel</a>
           </div>
           <div class="widget-content nopadding">
-            <table class="table table-bordered data-table table-responsive-lg">
+            <table class="table table-bordered data-table table-responsive-lg" id="filtertable">
               <thead>
                 <tr>
                   <th>SNo</th>
@@ -65,8 +65,7 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
 				
 				for($emp=0;$emp<count($get_people);$emp++) { 
 				
-				$service_done = select_query("SELECT count(id) as no_of_job FROM $db_name.all_job_details WHERE loginid='".$_SESSION['user_id']."' 
-				and to_technician='".$get_people[$emp]['id']."' and job_status='5' order by id desc ");
+				$service_done = select_query("SELECT count(id) as no_of_job FROM $db_name.all_job_details WHERE to_technician='".$get_people[$emp]['id']."' and job_status='5' order by id desc ");
 								
 				/*$leave_status = select_query("SELECT * FROM $db_name.technicians_login_details WHERE loginid='".$_SESSION['user_id']."' and is_active='1' order by id desc ");*/
 				
@@ -93,7 +92,10 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
     </div>
   </div>
 </div>
-
+<?php
+	$filename= basename($_SERVER['REQUEST_URI'], '?' . $_SERVER['QUERY_STRING']);
+	require_once ('filtertable.php');
+?>
 <!--Footer-part-->
 <div class="row-fluid">
   <div id="footer" class="span12"> 2019 &copy; Gtrac. All Rights Reserved. </div>

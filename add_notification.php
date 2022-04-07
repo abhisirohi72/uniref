@@ -2,7 +2,9 @@
 include('inc/header.php');
 
 $user_id = $_SESSION['user_id'];
-
+include("C:/xampp/htdocs/send_alert/phpmailer.lang-en.php");
+include("C:/xampp/htdocs/send_alert/class.phpmailer.php");
+include("C:/xampp/htdocs/send_alert/class.smtp.php");
 function send_notification_android2($tokens,$message,$androidkey)
 {
   $url = 'https://fcm.googleapis.com/fcm/send';
@@ -63,7 +65,72 @@ function send_ios_notification ($tokens,$message,$API_ACCESS_KEY)
 	   return $result;
 	   //return $fields;
 }
-
+function sendMail($email,$msg) {
+	// $email="ankur@g-trac.in,priya@g-trac.in,harish@g-trac.in";
+	$email = "abhishek@gtrac.in";//abhishek
+	 if($msg!="")
+	 {
+		 $mail=new PHPMailer();
+		 $Subject=" Uni-Ref Customer Notification";
+		 $mail->IsSMTP();
+		 $mail->SMTPAuth   = true;     // enable SMTP authentication
+		 $mail->SMTPSecure = "ssl";    // sets the prefix to the servier
+		 $mail->Host       = "smtp.gmail.com";      // sets GMAIL as the SMTP server
+		 $mail->Port       = 465;      // set the SMTP port
+		 //$mail->Username   = "priya@g-trac.in";  // GMAIL username
+		 //$mail->Password   = "manash4u2";   // GMAIL password
+		 $mail->Username   = "unirefservices@gmail.com";  // GMAIL username
+		 $mail->Password   = "U12345678!";   // GMAIL password
+ 
+		 //$mail->Username   = "anoop@g-trac.in";  // GMAIL username
+		 // $mail->Password   = "omsairam";   // GMAIL password
+		 
+		 $mail->From       = "info@g-trac.in";
+		 $mail->FromName   = "G-trac";
+		 //$mail->Body       = $message;//HTML Body
+		 $mail->AltBody    = ""; //Text Body
+		 $mail->WordWrap   = 50; // set word wrap
+		 
+		 $mail->AddReplyTo("sarvottma@gtrac.in","G-trac");
+		 $mail->IsHTML(true);
+		 
+		 
+		 $mail->Subject    = $Subject;
+	 
+	 
+		 //echo "sdfsdf";
+		 $arremail1=explode(",",$email);
+		 //print_r($arremail1);die();
+		 
+		 for($ec=0;$ec<count($arremail1);$ec++)
+		 {
+			 $mail->AddAddress($arremail1[$ec],$arremail1[$ec]);
+		 }
+		 
+		 //$mail->AddAddress($email,"email");
+		 //$mail->AddCC("harish@g-trac.in","G-Trac");
+		 $mail->AddCC("unirefindia@gmail.com","Uniref");
+		 
+		 $textTosend.= $msg;
+		 
+		 /*$textTosend .="Dear Recipients,<br/><br/><br/>The current temperature of following chambers are out of range and require attention:<br/>".$msg;*/
+		 $mail->IsHTML(true);
+		 //$mail->AddAttachment(__DOCUMENT_ROOT . '/reports/excel_reports/IdleMahaveera' . date("Y-m-d") . ".xls", 'IdleDaily_Report.xls');
+		 $mail->Body = $textTosend . " <br/><br/>UNI-REF <br/>Jaipur (India)";
+		 if(!$mail->send()) 
+		{
+		    echo "Mailer Error: " . $mail->ErrorInfo;
+		} 
+		else 
+		{
+			$mail->ClearAddresses();
+			$mail->ClearAttachments();
+		    echo "Message has been sent successfully";
+		}
+	 
+	 }
+	 
+ }
 if (isset($_POST['save_people'])) {
 	
 	//echo "<pre>";print_r($_POST);die;
@@ -104,11 +171,19 @@ if (isset($_POST['save_people'])) {
 	
 		
 	$insert_query = insert_query($db_name.'.push_notification', array('person_id' => $tech_id, 'phone_no' => $phone_no , 
-		'message' => $message , 'from_date' => $from_date, 'to_date' => $to_date, 'loginid' =>$_SESSION['user_id']));
+		'message' => $message , 'from_date' => $from_date, 'to_date' => $to_date));
+		
+	//get user email 
+	$custData = select_query("SELECT email_id FROM $db_name.customer_details where is_active='1' and cust_id='".$cust_id."' ");
+	if(count($custData)>0){
+		foreach($custData as $custData);
+		//mail send 
+		sendMail($custData['email_id'],$message);	
+	}	
 	
 	if($phone_no == "All")
 	{
-		$techData = select_query("SELECT mobile_no FROM $db_name.technicians_login_details where is_active='1' and loginid='".$_SESSION['user_id']."' ");
+		$techData = select_query("SELECT mobile_no FROM $db_name.technicians_login_details where is_active='1'");
 		for($ecl=0;$ecl<count($techData);$ecl++)
 		{
 			$tech_PhoneNo .= $techData[$ecl]['mobile_no'].",";
@@ -236,7 +311,7 @@ if (isset($_POST['save_people'])) {
 			  unset($_SESSION['unsuccess_msg']);
 			  
 			  $get_tech_recd = select_query("SELECT id,concat(emp_name,' / ',mobile_no) as tech_name,mobile_no  FROM 
-			  $db_name.technicians_login_details WHERE is_active='1' and loginid='".$_SESSION['user_id']."'");
+			  $db_name.technicians_login_details WHERE is_active='1'");
 			  
 			  ?>
 			  

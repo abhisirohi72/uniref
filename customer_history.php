@@ -4,7 +4,7 @@ include('inc/header.php');
 
 $id_roles = $_SESSION['id_roles'];
 
-$get_people = select_query("SELECT * FROM $db_name.customer_details WHERE loginid='".$_SESSION['user_id']."' and is_active='1' order by id desc ");
+$get_people = select_query("SELECT * FROM $db_name.customer_details WHERE is_active='1' order by id desc ");
 	
 //echo "<pre>";print_r($get_people);die;
 ?>
@@ -45,9 +45,10 @@ $get_people = select_query("SELECT * FROM $db_name.customer_details WHERE logini
 		<div class="widget-box">
           <div class="widget-title"> <span class="icon"><i class="icon-th"></i></span>
             <h5>All Customers Report History</h5>
+			<a href="download_excel.php?action=customer_history" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Export Excel</a>
           </div>
           <div class="widget-content nopadding">
-            <table class="table table-bordered data-table table-responsive-lg">
+            <table class="table table-bordered data-table table-responsive-lg" id="filtertable">
               <thead>
                 <tr>
                   <th>SNo</th>
@@ -92,7 +93,10 @@ $get_people = select_query("SELECT * FROM $db_name.customer_details WHERE logini
     </div>
   </div>
 </div>
-
+<?php
+	$filename= basename($_SERVER['REQUEST_URI'], '?' . $_SERVER['QUERY_STRING']);
+	require_once ('filtertable.php');
+?>
 <!--Footer-part-->
 <div class="row-fluid">
   <div id="footer" class="span12"> 2019 &copy; Gtrac. All Rights Reserved. </div>

@@ -75,7 +75,7 @@ else
 }
 
 
-$get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHERE loginid='".$_SESSION['user_id']."' and is_active='1' order by id  ");
+$get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHERE is_active='1' order by id  ");
 	
 //echo "<pre>";print_r($get_people);die;
 ?>
@@ -139,9 +139,10 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
 		<div class="widget-box">
           <div class="widget-title"> <span class="icon"><i class="icon-th"></i></span>
             <h5>All Technicians Attendance</h5>
+			<a href="download_excel.php?action=technicians_attendance" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Export Excel</a>
           </div>
           <div class="widget-content nopadding">
-            <table class="table table-bordered data-table table-responsive-lg">
+            <table class="table table-bordered data-table table-responsive-lg" id="filtertable">
               <thead>
                 <tr>
                   <th>SNo</th>
@@ -165,8 +166,7 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
 				
 				for($emp=0;$emp<count($get_people);$emp++) { 
 				
-				$service_done = select_query("SELECT count(id) as no_of_job FROM $db_name.all_job_details WHERE loginid='".$_SESSION['user_id']."' 
-				and to_technician='".$get_people[$emp]['id']."' and request_date='".$startdate."' and is_active='1'");
+				$service_done = select_query("SELECT count(id) as no_of_job FROM $db_name.all_job_details WHERE to_technician='".$get_people[$emp]['id']."' and request_date='".$startdate."' and is_active='1'");
 												
 					/*$emp_own_job = select_query("SELECT count(*) as Total_job FROM $employee_track.request WHERE 
 						emp_id='".$get_emp_data[$emp]['id']."' and phone_no='".$get_emp_data[$emp]['mobile_no']."' and 
@@ -179,8 +179,7 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
 						and longtitude is not null and current_record IN (0,1,3) and login_id='".$_SESSION['user_id']."' ");*/
 					
 					$tech_day_in_out = select_query("SELECT * FROM $db_name.installer_attendence_tbl WHERE 
-						inst_id='".$get_people[$emp]['id']."'  and  req_date='".$startdate."'  and is_active='1' and 
-						login_id='".$_SESSION['user_id']."' ");
+						inst_id='".$get_people[$emp]['id']."'  and  req_date='".$startdate."'  and is_active='1' ");
 					
 					//echo "<pre>";print_r($tech_day_in_out);//die;
 					if(count($tech_day_in_out)>0)
@@ -241,7 +240,10 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
     </div>
   </div>
 </div>
-
+<?php
+	$filename= basename($_SERVER['REQUEST_URI'], '?' . $_SERVER['QUERY_STRING']);
+	require_once ('filtertable.php');
+?>
 <!--Footer-part-->
 <div class="row-fluid">
   <div id="footer" class="span12"> 2019 &copy; Gtrac. All Rights Reserved. </div>

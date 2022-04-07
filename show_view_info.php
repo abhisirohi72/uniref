@@ -30,13 +30,12 @@ function dateDifference($date1, $date2)
    return $months;
 
 }
-
 if(isset($_GET['action']) && $_GET['action']=='GetTechnicianDetails')
 {
 
 	$tech_id = $_GET["rid"];
 	
-	$getEmpTripData = select_query("select * from $db_name.technicians_login_details where id='".$tech_id."' and is_active='1' and loginid='".$_SESSION['user_id']."' order by id");
+	$getEmpTripData = select_query("select * from $db_name.technicians_login_details where id='".$tech_id."' and is_active='1' order by id");
 						
 	//echo "<pre>";print_r($getEmpTripData);die;
 	
@@ -87,10 +86,10 @@ if(isset($_GET['action']) && $_GET['action']=='GetTechnicianAllJobDetails')
 
 	$tech_id = $_GET["rid"];
 	
-	$getJobData = select_query("select * from $db_name.all_job_details where to_technician='".$tech_id."' and job_status='5' and loginid='".$_SESSION['user_id']."' order by id");
+	$getJobData = select_query("select * from $db_name.all_job_details where to_technician='".$tech_id."' and job_status='5' order by id");
 	
 	
-	$getEmpDetails = select_query("select * from $db_name.technicians_login_details where id='".$getJobData[0]['to_technician']."' and is_active='1' and loginid='".$_SESSION['user_id']."' ");					
+	$getEmpDetails = select_query("select * from $db_name.technicians_login_details where id='".$getJobData[0]['to_technician']."' and is_active='1' ");					
 	//echo "<pre>";print_r($getEmpTripData);die;
 	
 ?>
@@ -131,9 +130,9 @@ if(isset($_GET['action']) && $_GET['action']=='GetCustomerDetails')
 
 	$cust_id = $_GET["rid"];
 	
-	$getCustomerData = select_query("select * from $db_name.customer_details where id='".$cust_id."' and is_active='1' and loginid='".$_SESSION['user_id']."' order by id");
+	$getCustomerData = select_query("select * from $db_name.customer_details where id='".$cust_id."' and is_active='1' order by id");
 	
-	$getCustomerModel = select_query("select * from $db_name.customer_model_master where cust_id='".$cust_id."' and is_active='1' and loginid='".$_SESSION['user_id']."' order by id");					
+	$getCustomerModel = select_query("select * from $db_name.customer_model_master where cust_id='".$cust_id."' and is_active='1' order by id");					
 	//echo "<pre>";print_r($getCustomerModel);die;
 	
 ?>
@@ -151,7 +150,7 @@ if(isset($_GET['action']) && $_GET['action']=='GetCustomerDetails')
 	<?	 $todaydate = date('Y-m-d');
 	
 		 for($i=0;$i<count($getCustomerModel);$i++) {
-			 
+			 $nextAMCDate="";
 			 if($getCustomerData[0]['date_of_installation'] != '0000-00-00' && $getCustomerData[0]['date_of_installation'] != '')
 				{
 					$installationDate = date("d/m/Y",strtotime($getCustomerData[0]['date_of_installation'])); 
@@ -204,7 +203,7 @@ if(isset($_GET['action']) && $_GET['action']=='GetJobRequestDetails')
 
 	$tech_id = $_GET["rid"];
 	
-	$get_job_data = select_query("select * from $db_name.all_job_details where id='".$tech_id."' and loginid='".$_SESSION['user_id']."' order by id");
+	$get_job_data = select_query("select * from $db_name.all_job_details where id='".$tech_id."' $subUserCond order by id");
 						
 	//echo "<pre>";print_r($get_job_data);die;
 	
@@ -262,7 +261,7 @@ if(isset($_GET['action']) && $_GET['action']=='GetJobRequestDetails')
           <td><?php echo $get_job_data[$emp]['incoming_voltage']; ?></td>  
           <td><?php echo $get_job_data[$emp]['system_amps']; ?></td> 
           <td><?php echo $get_job_data[$emp]['room_temp']; ?></td>           
-          <td><?php echo $get_job_data[$emp]['symptom']; ?></td>
+          <td><?php echo str_replace("~||~", ", ", $get_job_data[$emp]['symptom']); ?></td>
           <!--<td><?php echo $get_job_data[$emp]['defect']; ?></td>-->
           <td><?php echo $get_job_data[$emp]['action']; ?></td>
           <td><?php echo $get_job_data[$emp]['work_type']; ?></td> 
@@ -304,7 +303,7 @@ if(isset($_GET['action']) && $_GET['action']=='GetEmpOwnJob')
 ?>
 <table class="table table-striped table-bordered table-hover">
     <thead>
-    <tr>  
+    <tr>  	
         <th>Job ID</th> 
         <th>Image</th>
         <th>Phone No/ Name</th>

@@ -2,7 +2,7 @@
 include('inc/header.php');
 
 $user_id = $_SESSION['user_id'];
-
+include("C:/xampp/htdocs/send_alert/phpmailer.lang-en.php");
 include("C:/xampp/htdocs/send_alert/class.phpmailer.php");
 include("C:/xampp/htdocs/send_alert/class.smtp.php");
 
@@ -21,7 +21,7 @@ function googlatlang($address)
 	$lat = $jsondata["results"][0]["geometry"]["location"]["lat"];
 	$lng = $jsondata["results"][0]["geometry"]["location"]["lng"];
 	/*echo "<script type='text/javascript'>alert('".$lat."');</script>";*/
-  return $lat."@".$lng;
+  	return $lat."@".$lng;
   
 }
 
@@ -114,9 +114,9 @@ function array_msort($array, $cols)
 	return $ret;
 }
 
-function sendMail($email,$msg,$TicketNo) {
+function sendMail($email,$msg,$TicketNo, $service_type="") {
    // $email="ankur@g-trac.in,priya@g-trac.in,harish@g-trac.in";
-
+   $email = "abhisirohi72@gmail.com";//abhishek
 	if($msg!="")
 	{
 		$mail=new PHPMailer();
@@ -165,6 +165,12 @@ function sendMail($email,$msg,$TicketNo) {
 		/*$textTosend .="Dear Recipients,<br/><br/><br/>The current temperature of following chambers are out of range and require attention:<br/>".$msg;*/
 		$mail->IsHTML(true);
 		//$mail->AddAttachment(__DOCUMENT_ROOT . '/reports/excel_reports/IdleMahaveera' . date("Y-m-d") . ".xls", 'IdleDaily_Report.xls');
+		if($service_type=="Only Service"){
+			$mail->addAttachment("mail_attachments/ServiceReportUniRef.docx");
+		}
+		elseif($service_type=="PMS"){
+			$mail->addAttachment("mail_attachments/pms.jpeg");
+		}
 		$mail->Body = $textTosend . " <br/><br/>UNI-REF <br/>Jaipur (India)";
 		$mail->Send();
 		$mail->ClearAddresses();
@@ -176,16 +182,15 @@ function sendMail($email,$msg,$TicketNo) {
 
 $req_id = base64_decode($_REQUEST['id']);
 
-
-$get_edit_recd = select_query("SELECT * FROM $db_name.all_job_details WHERE id='".$req_id."' and loginid='".$_SESSION['user_id']."' ");
+$get_edit_recd = select_query("SELECT * FROM $db_name.all_job_details WHERE id='".$req_id."'");
 //echo "<pre>";print_r($get_edit_recd);die;
-
+			  
 $get_cust_recd_edit = select_query("SELECT id,concat(name,'##',cust_id) as cust_id,concat(name,' / ',cust_id) as cust_name,
-			  company_name, phone_no FROM $db_name.customer_details WHERE is_active='1' and loginid='".$_SESSION['user_id']."' and cust_id='".$get_edit_recd[0]['customer_id']."' ");
+			  company_name, phone_no FROM $db_name.customer_details WHERE is_active='1' and cust_id='".$get_edit_recd[0]['customer_id']."' ");
 
 
 $get_tech_recd_edit = select_query("SELECT id,concat(emp_name,' / ',mobile_no) as tech_name,mobile_no  FROM $db_name.technicians_login_details
- 			WHERE is_active='1' and loginid='".$_SESSION['user_id']."' and id='".$get_edit_recd[0]['to_technician']."'");
+ 			WHERE is_active='1' and id='".$get_edit_recd[0]['to_technician']."'");
 	
 
 if (isset($_POST['save_people'])) {
@@ -210,6 +215,10 @@ if (isset($_POST['save_people'])) {
 	$model_no = $_POST['model_no'];
 	$serial_no = $_POST['serial_no'];
 	$symptom = $_POST['symptom'];
+	if(!empty($symptom)){
+		$sympton_change_to_string= implode("~||~",$symptom);
+		$symptom = $sympton_change_to_string;
+	}
 	//$defect = $_POST['defect'];
 	
 	$work_type = $_POST['work_type'];
@@ -267,7 +276,7 @@ if (isset($_POST['save_people'])) {
 	if($cust_id != $get_edit_recd[0]['customer_id'])
 	{
 		$getCustId = select_query("SELECT id,cust_id,name,amc_service_done FROM $db_name.customer_details where cust_id='".$cust_id."' and 
-		is_active='1' and loginid='".$_SESSION['user_id']."' ");
+		is_active='1'");
 		//echo "<pre>";print_r($getCustId);die;
 		$jobId = "M".date("dmy")."0".$getCustId[0]['id']."FR".($getCustId[0]['amc_service_done']+1);
 	} else {
@@ -281,13 +290,13 @@ if (isset($_POST['save_people'])) {
 	'serial_no' => $serial_no, 'symptom' => $symptom, 'work_type' => $work_type, 'priority_type' => $priority_type, 
 	'cubic_ft' => $cubic_ft, 'customer_email_id' => $cust_email_id, 'customer_phone_no' => $cust_phone_no,
 	'amount_to_be_collected' => $amount_to_be_collected, 'total_working_hrs_req' => $total_working_hrs,
-	'job_assign_time' => date("Y-m-d H:i:s"),  'job_status' => 0,  'loginid' => $_SESSION['user_id']);
+	'job_assign_time' => date("Y-m-d H:i:s"),  'job_status' => 0);
 			
-	$condition = array('id' => $req_id, 'is_active' => 1, 'loginid' => $_SESSION['user_id']);            
+	$condition = array('id' => $req_id, 'is_active' => 1);
+	
 	$result = update_query($db_name.'.all_job_details', $update_array, $condition);
 	
-	$techData = select_query("SELECT * FROM $db_name.technicians_login_details WHERE id='".$tech_id."' and 
-									  loginid='".$_SESSION['user_id']."' and is_active='1' ");
+	$techData = select_query("SELECT * FROM $db_name.technicians_login_details WHERE id='".$tech_id."' and is_active='1' ");
 									  
 	$textTosend.='Hi '.$cust_name.',<br>';
 	$textTosend.='<br>Your '.$service_type.' Request has been Received for '.date("dS F Y",strtotime($req_date)).'.<br>';
@@ -295,19 +304,19 @@ if (isset($_POST['save_people'])) {
 	/*$textTosend.='UNI-REF<br>';
 	$textTosend.='Jaipur(India)';*/
 	
-	sendMail($cust_email_id,$textTosend,$jobId);
+	sendMail($cust_email_id,$textTosend,$jobId, $service_type);
 	
 	$msgtxt = "Hi ".$cust_name.", Your ".$service_type." request has been received ".date("dS F Y",strtotime($req_date)).". ".$techData[0]['emp_name']."(+91".$techData[0]['mobile_no'].") has been assigned to your Service Booking";
 			
 	$msgtxt_tech = "Hi ".$techData[0]['emp_name'].", One Service request has been assigned to you on ".date("dS F Y",strtotime($req_date)).".";
-	
+		
 	$insert_notification_array = array('person_id' => $cust_id , 'phone_no' => $cust_phone_no, 'message' => $msgtxt, 
-	'from_date' => $req_date, 'to_date' => $req_date, 'loginid' => $_SESSION['user_id']);
+	'from_date' => $req_date, 'to_date' => $req_date);
 	
 	insert_query($db_name.'.cust_push_notification', $insert_notification_array);
 	
 	$insert_tech_notification_array = array('person_id' => $tech_id , 'phone_no' => $techData[0]['mobile_no'], 'message' => $msgtxt_tech, 
-	'from_date' => $req_date, 'to_date' => $req_date, 'loginid' => $_SESSION['user_id']);
+	'from_date' => $req_date, 'to_date' => $req_date);
 	
 	insert_query($db_name.'.push_notification', $insert_tech_notification_array);
 	
@@ -347,14 +356,14 @@ if (isset($_POST['save_people'])) {
 									);
 			  
 			 $API_ACCESS_KEY = "AAAA7NXaEQw:APA91bFDi-bgj-sxloGpd1hUhxscejG2KonWaWa1_gZSK5arSV8hwGJNXcg96lXZiwfAFKeQOkY2QVePjxgVoh6YWbnnDNfc7jRIOzPFnKh3Z0AVow6VTwXA5vkvNN0ob7EFPj_GKSqH";
-			 $message_status = send_ios_notification($tokens,$Notificato_msg,$API_ACCESS_KEY);
+			//  $message_status = send_ios_notification($tokens,$Notificato_msg,$API_ACCESS_KEY);abhishek
 			
 		} else {
 			
 			$Notificato_msg = array("data" => "New Job Allocated. Please Refresh Application");
 	 
 			$androidkey = "AAAAityYBUo:APA91bHqlslQqmabKf60tA5oag-k8AmZ4HYezea4P3utHDsZZEeDe9hLL1nenM_MAJdIZPY1Ou8oeOKGK47KwpP7KuUm7KPNCMPmKlQZSa-jcIx0uD9Cu-b3lpBXwPJK_nEOjEc1NrNc";			
-			$message_status = send_notification_android2($tokens,$Notificato_msg,$androidkey);
+			//$message_status = send_notification_android2($tokens,$Notificato_msg,$androidkey);abhishek
 		
 		}
 		
@@ -373,14 +382,14 @@ if (isset($_POST['save_people'])) {
 									);
 			  
 			 $CUST_API_ACCESS_KEY = "AAAA87f8--I:APA91bGG1Ymiu8R4HSJoa25ot1NBltzxgMs2BcUzY2zye-UFNlW98ak1Pf5_4cqBsgQYuyYCaLh1pmTdTJGngrk5LO2rbj7t7RNZLS-tcQdisJaGku75bRCue2_dbAZEIYTyLm6Q9d6r";
-			 $message_status = send_ios_notification($cust_tokens,$cust_Notificato_msg,$CUST_API_ACCESS_KEY);
+			 //$message_status = send_ios_notification($cust_tokens,$cust_Notificato_msg,$CUST_API_ACCESS_KEY);abhishek
 			
 		} else {
 			
 			$cust_Notificato_msg = array("data" => "We have Received Your Service Request");
 	 
 			$cust_androidkey = "AAAApKEFvR0:APA91bGiQdxPMnsX6gAi2-jZL8Du-AakkLwRTU_bx-_nCHaTncKf85hSuti8-LkAWs62pyJjulPs3URy69-vm2UoLBztqzrjYS38nCLtTf7ASJ8T1_7WH4xkSXEWWQDSDkRWeBPLOXSg";			
-			$message_status = send_notification_android2($cust_tokens,$cust_Notificato_msg,$cust_androidkey);
+			//$message_status = send_notification_android2($cust_tokens,$cust_Notificato_msg,$cust_androidkey);abhishek
 		
 		}
 		
@@ -442,10 +451,10 @@ if (isset($_POST['save_people'])) {
 			  unset($_SESSION['jobnotcreate_msg']);
 			  
 			  $get_cust_recd = select_query("SELECT id,concat(name,'##',cust_id) as cust_id,concat(name,' / ',cust_id) as cust_name,
-			  company_name, phone_no FROM $db_name.customer_details WHERE is_active='1' and loginid='".$_SESSION['user_id']."'");
+			  company_name, phone_no FROM $db_name.customer_details WHERE is_active='1'");
 			  
 			  $get_tech_recd = select_query("SELECT id,concat(emp_name,' / ',mobile_no) as tech_name,mobile_no  FROM 
-			  $db_name.technicians_login_details WHERE is_active='1' and loginid='".$_SESSION['user_id']."'");
+			  $db_name.technicians_login_details WHERE is_active='1'");
 			  
 			  $get_Symptom = select_query("SELECT * FROM $db_name.symptoms_tbl WHERE is_active='1' ");
 			  
@@ -547,14 +556,18 @@ if (isset($_POST['save_people'])) {
                   <input type="text" name="serial_no" id="serial_no"  class="mandatory" placeholder="Serial Number" value="<?=$get_edit_recd[0]['serial_no']?>"/>
                   <span id="branch_error"></span> </div>
               </div>
-              
+				<?php 
+					//break the sympton and create in an array
+					$getSymptonArray= explode("~||~", $get_edit_recd[0]['symptom']);
+
+				?>
               <div class="control-group">
                 <label class="control-label">Symptom:<font color="red">* </font></label>
                 <div class="controls">
-                  <select name="symptom" id="symptom" class="form-control">
-                      <option value="">Select Symptom</option>
+                  <select name="symptom[]" multiple id="symptom" class="form-control" size="5" style="width:300px;">
+                      <option value="" disable="disable">Select Symptom</option>
                       <? for($sym=0;$sym<count($get_Symptom);$sym++) { ?>
-                      <option value="<?=$get_Symptom[$sym]['sym_name'];?>"><?=$get_Symptom[$sym]['sym_name'];?></option>
+                      <option value="<?=$get_Symptom[$sym]['sym_name'];?>" <?php if(in_array($get_Symptom[$sym]['sym_name'],$getSymptonArray) ) { echo "selected='selected'";}?>><?=$get_Symptom[$sym]['sym_name'];?></option>
                       <? } ?>
                   </select>
                   <span id="branch_error"></span> </div>
@@ -571,14 +584,14 @@ if (isset($_POST['save_people'])) {
               </div>-->
               
               <div class="control-group">
-                <label class="control-label">Work Type:<font color="red">* </font></label>
+                <label class="control-label">Work Type:</label>
                 <div class="controls">
                   <input type="text" name="work_type" id="work_type"  class="mandatory" placeholder="Work Type" value="<?=$get_edit_recd[0]['work_type']?>"/>
                   <span id="branch_error"></span> </div>
               </div>
               
               <div class="control-group">
-                <label class="control-label">Priority Type:<font color="red">* </font></label>
+                <label class="control-label">Priority Type:</label>
                 <div class="controls">
                   <select name="priority_type" id="priority_type" class="form-control">
                       <option value="">Select Priority Type</option>
@@ -594,7 +607,7 @@ if (isset($_POST['save_people'])) {
               </div>
               
               <div class="control-group">
-                <label class="control-label">Cubic ft:<font color="red">* </font></label>
+                <label class="control-label">Cubic ft:</label>
                 <div class="controls">
                   <input type="text" name="cubic_ft" id="cubic_ft"  class="mandatory" placeholder="Cubic ft" value="<?=$get_edit_recd[0]['cubic_ft']?>"/>
                   <span id="branch_error"></span> </div>
@@ -622,7 +635,7 @@ if (isset($_POST['save_people'])) {
               </div>
               
               <div class="control-group">
-                <label class="control-label">Total Working Hours Req:<font color="red">* </font></label>
+                <label class="control-label">Total Working Hours Req:</label>
                 <div class="controls">
                   <input type="text" name="total_working_hrs" id="total_working_hrs" value="<?=$get_edit_recd[0]['total_working_hrs_req']?>" class="mandatory" placeholder="Total Working Hours Req" />
                   <span id="branch_error"></span> </div>
@@ -749,26 +762,26 @@ $( document ).ready(function(){
 			return false;
 		}
 		
-		var work_type = $("#work_type").val();
-		if( work_type == '' ) {
-			$(".error_display").css("display","block");
-			$("#print_err").html(" Please Enter Work Type.");
-			return false;
-		}
+		// var work_type = $("#work_type").val();
+		// if( work_type == '' ) {
+		// 	$(".error_display").css("display","block");
+		// 	$("#print_err").html(" Please Enter Work Type.");
+		// 	return false;
+		// }
 		
-		var priority_type = $("#priority_type").val();
-		if( priority_type == '' ) {
-			$(".error_display").css("display","block");
-			$("#print_err").html(" Please Enter Priority Type.");
-			return false;
-		}
+		// var priority_type = $("#priority_type").val();
+		// if( priority_type == '' ) {
+		// 	$(".error_display").css("display","block");
+		// 	$("#print_err").html(" Please Enter Priority Type.");
+		// 	return false;
+		// }
 		
-		var cubic_ft = $("#cubic_ft").val();
-		if( cubic_ft == '' ) {
-			$(".error_display").css("display","block");
-			$("#print_err").html(" Please Enter Cubic ft.");
-			return false;
-		}
+		// var cubic_ft = $("#cubic_ft").val();
+		// if( cubic_ft == '' ) {
+		// 	$(".error_display").css("display","block");
+		// 	$("#print_err").html(" Please Enter Cubic ft.");
+		// 	return false;
+		// }
 		
 		
 		var cust_email_id = $("#cust_email_id").val();
@@ -796,12 +809,12 @@ $( document ).ready(function(){
 			}
 		}
 		
-		var total_working_hrs = $("#total_working_hrs").val();
-		if( total_working_hrs == '' ) {
-			$(".error_display").css("display","block");
-			$("#print_err").html(" Please Enter Total Working Hours.");
-			return false;
-		}
+		// var total_working_hrs = $("#total_working_hrs").val();
+		// if( total_working_hrs == '' ) {
+		// 	$(".error_display").css("display","block");
+		// 	$("#print_err").html(" Please Enter Total Working Hours.");
+		// 	return false;
+		// }
 		
 		/*var fields = phone_number.split('##');
 		var day_status = fields[2];

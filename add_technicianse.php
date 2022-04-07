@@ -48,7 +48,7 @@ if (isset($_POST['save_people'])) {
 
 	//echo "<pre>";print_r($_POST);die;
 	
-	$chkEmp = select_query("SELECT * FROM $db_name.technicians_login_details WHERE mobile_no='".$number."' AND is_active='1' AND loginid='".$_SESSION['user_id']."' ");
+	$chkEmp = select_query("SELECT * FROM $db_name.technicians_login_details WHERE mobile_no='".$number."' AND is_active='1'");
 	//echo "<pre>";print_r($chkEmp);die;
 	
 	if(count($chkEmp)>0)
@@ -111,7 +111,7 @@ if (isset($_POST['save_people'])) {
 		'home_address' =>$home_address, 'home_pin_code' => $home_pin_code, 'home_latitude' => $home_lat, 'home_longitude' => $home_lng,
 		'ofy_address' =>$ofy_address,  'ofy_pin_code' => $ofy_pin_code , 'ofy_latitude' => $lat, 'ofy_longtitude' => $lng,  
 		'ofy_from_time' =>$from_time, 'ofy_to_time' => $to_time,  'specialization' => $specialization , 'date_of_joining' => $joining_date ,
-		'monthly_salary' => $monthly_salary , 'loginid' =>$_SESSION['user_id']));
+		'monthly_salary' => $monthly_salary ));
 		
 		if($insert_query) {
 
