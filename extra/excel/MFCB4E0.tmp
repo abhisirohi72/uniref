@@ -1,0 +1,145 @@
+<?php
+$dbhost = 'localhost';
+$dbuser = 'root';
+$dbpass = '';
+$db = 'controlroom';
+
+$connew = mysql_connect($dbhost,$dbuser,$dbpass);
+$dbnew = mysql_select_db($db,$connew);
+
+$currentdate  = date('Y-m-d',(strtotime(date('Y-m-d'))-1));
+
+if(isset($_POST["submit"]))
+{
+
+	$filename="uploads/".$_FILES["file"]["name"] ;
+	$path_info = pathinfo($filename);
+
+	if($path_info['extension']=="csv" || $path_info['extension']=="CSV")
+	{
+		move_uploaded_file($_FILES['file']['tmp_name'],"$filename");
+		$handle = fopen("$filename", "r");
+
+		$Error=false;
+		$msgshow = false;
+		$count=0;
+
+		while (($data = fgetcsv($handle, 1000, ",")) !== FALSE)
+		{		
+				
+							$trip_location = trim($data[0]);
+							$trip_number = $data[1];
+							$source_destination = $data[2];
+							$dispatch_date = $data[3];
+							$journey_hour = $data[4];
+							$driver_name = $data[5];
+							$driver_number = $data[6];
+							$date = $data[7];	   
+						   $query = "insert into trip(trip_location,trip_number,source_destination,dispatch_date,journey_hour,driver_name,driver_number,date) values('".$trip_location."','".$trip_number."', '".$source_destination."', '".$dispatch_date."', '".$journey_hour."', '".$driver_name."', '".$driver_number."', '".$date."' )";
+						   mysql_query($query);
+							/*$arry_date = explode("-",$data[13]);                               
+						   
+							$arry_yr_break = explode(" ",$arry_date[2]);
+							$arry_time_break = explode(":",$arry_yr_break[1]);
+						   
+							$arry_year = $arry_yr_break[0];                               
+							$arry_month = $arry_date[1];
+							$arry_day = $arry_date[0];   
+						   
+							$arry_hh = $arry_time_break[0];
+							$arry_mm = $arry_time_break[1];
+							$arry_ss = "00";  */                     
+	
+			$count++;
+	
+		}
+
+
+        if($Error==false && $msgshow == false)
+        {
+            $msg="Sheet file imported successfully";
+        }
+
+    }
+    else
+    {
+        $Error=true;
+        $msg ="Oops! your uploading file is not csv file. Please check.<br/>";
+    }
+
+
+}
+
+?>
+
+<!-- BEGIN CONTENT WRAPPER-->
+
+<!-- Large modal -->
+<style>
+.modal-backdrop {
+    z-index: 0 !important;
+}
+</style>
+
+<style type="text/css" >
+.rpt-message{ text-align: center; color:#FF0000; border: 1px solid rgb(221, 221, 221); border-radius: 22px; padding: 5px; box-shadow: 0px 0px 26px 1px rgba(221, 221, 221, 0.55); font-size: 16px;}
+</style>
+
+<div class="page-content-wrapper panel-heading-cs">
+  <!-- BEGIN CONTENT-->
+  <div class="page-content marlft" style="margin-left:0px ; margin-top:0px;padding:5px;">
+    <!-- START ADVANCE SEARCH PORTLET-->
+
+    <div class="box">
+      <div class="box-header">
+        <div class="col-lg-3">
+          <h3 class="box-title">Trip Data Import</h3>
+        </div>
+        <div class="col-lg-4">
+            <form method="post" enctype="multipart/form-data">
+
+              <div class="col-lg-7 rpt-datepic" >
+
+                <input type="file" name="file" class="btn btn-default btn-file" style="width: 100%; text-align: left;" />
+
+              </div>
+
+              <div class="col-lg-4" style=" padding: 4px 2px">
+                <input value="Submit" name="submit" style="width: 80px; margin: 0px 4px 0px 3px; height: 32px; background: rgb(0, 172, 237) none repeat scroll 0% 0%; color: rgb(255, 255, 255); border: medium none; border-radius: 2px;" class=" form-control" type="submit">
+              </div>
+            </form>
+        </div>
+
+        <div class="col-lg-5" >
+        <?php if($msg != ""){?>
+        <div class="col-lg-12 rpt-message"> <?php if(isset($msg)){ echo $msg; } ?> </div>
+        <?php } ?>
+        </div>
+       
+        <!--<div class="col-lg-2">
+         
+        </div>-->
+     
+      </div>
+
+     
+       
+    </div>
+
+    <!-- END ADVANCE SEARCH PORTLET-->
+
+  </div>
+  <!-- END CONTENT WRAPPER-->
+
+</div>
+
+
+
+</div>
+<!-- END CONTENT WRAPPER-->
+
+</div>
+
+
+<!-- END CONTAINER -->
+

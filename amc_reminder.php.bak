@@ -1,0 +1,117 @@
+<?php 
+session_start();
+include('inc/header.php'); 
+
+$id_roles = $_SESSION['id_roles'];
+
+/*$get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE loginid='".$_SESSION['user_id']."' and is_active='1' order by id desc ");*/
+	
+//echo "<pre>";print_r($get_customer);die;
+?>
+
+
+<link rel="stylesheet" type="text/css" href="css/custom.css">
+
+
+
+<div id="content">
+  <div id="content-header">
+    <div id="breadcrumb"> <a href="view_customer.php" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> <a href="#" class="current">AMC Reminder</a> </div>
+    
+  </div>
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+        
+		 <?php if(isset($_SESSION['success_msg'])) {  ?>
+			<div class="alert alert-success success_display">
+			<button class="close" data-dismiss="alert">x</button>
+			<strong class="error_submission">Success!</strong><span> Succesfully deleted.</span>
+		  </div>
+		  <?php } 
+		  unset($_SESSION['success_msg']);
+		  ?>
+          
+		<div class="widget-box">
+          
+          <section class="container-fluid sec-event">
+    <div class="container">
+                
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                  
+                                    <div class="card-body">
+                                        <h6 class="card-title"><a href="#" class="card-link text-dark">Latest</a> </h6>
+                                        <p class="card-text text-muted ">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. </p>
+
+                                        <p class="card-text text-muted ">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. </p>
+
+                                        <p class="card-text text-muted ">Lorem Ipsum is simply dummy text of the printing and typesetting industry. </p>
+                                    </div>
+                                </div>
+                            </div><!--.col-->
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                   
+                                    <div class="card-body">
+                                        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d14008.351479261963!2d77.13700025!3d28.627128449999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1570083405174!5m2!1sen!2sin" width="100%" height="300" frameborder="0" style="border:0;" allowfullscreen=""></iframe>
+                                    </div>
+                                </div>
+                            </div><!--.col-->
+
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                  
+                                    <div class="card-body">
+                                        <h6 class="card-title"><a href="#" class="card-link text-dark">Today's Complaints</a> </h6>
+                                       <p class="card-text text-muted ">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. </p>
+
+                                        <p class="card-text text-muted ">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. </p>
+
+                                        <p class="card-text text-muted ">Lorem Ipsum is simply dummy text of the printing and typesetting industry. </p>
+                                    </div>
+                                </div>
+                            </div><!--.col-->
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                   
+                                    <div class="card-body">
+                                        <h6 class="card-title"><a href="#" class="card-link text-dark">AMC Reminder's for this month </a> </h6>
+                                        <p class="card-text text-muted ">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. </p>
+
+                                        <p class="card-text text-muted ">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. </p>
+
+                                        <p class="card-text text-muted ">Lorem Ipsum is simply dummy text of the printing and typesetting industry. </p>
+                                    </div>
+                                </div>
+                            </div><!--.col-->
+                        </div><!--.row-->
+                      
+                    
+            </div><!--.container-->
+        </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Footer-part-->
+<div class="row-fluid">
+  <div id="footer" class="span12"> 2019 &copy; Gtrac. All Rights Reserved. </div>
+</div>
+<!--end-Footer-part-->
+<script src="js/jquery.min.js"></script> 
+<script src="js/jquery.ui.custom.js"></script> 
+<script src="js/bootstrap.min.js"></script> 
+<script src="js/jquery.uniform.js"></script> 
+<script src="js/select2.min.js"></script> 
+<script src="js/jquery.dataTables.min.js"></script> 
+<script src="js/matrix.js"></script> 
+<script src="js/matrix.tables.js"></script>
+
+
+
+</body>
+</html>
