@@ -18,62 +18,62 @@ if(isset($_POST["submit"]))
 	{
 		if($_POST["Showrequest"]==1)
 		{
-			$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=1 and is_active='1' and request_date>='".$startdate."' and request_date<='".$Enddate."' and to_technician!='' ";
+			$WhereQuery="WHERE job_status=1 and is_active='1' and request_date>='".$startdate."' and request_date<='".$Enddate."' and to_technician!='' ";
 		}
 		else if($_POST["Showrequest"]==2)
 		{
-			$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=2 and is_active='1' and request_date>='".$startdate."' and request_date<='".$Enddate."' and to_technician!='' ";
+			$WhereQuery="WHERE job_status=2 and is_active='1' and request_date>='".$startdate."' and request_date<='".$Enddate."' and to_technician!='' ";
 		}
 		else if($_POST["Showrequest"]==3)
 		{
-			$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=3 and is_active='1' and request_date>='".$startdate."' and request_date<='".$Enddate."' and to_technician!='' ";
+			$WhereQuery="WHERE job_status=3 and is_active='1' and request_date>='".$startdate."' and request_date<='".$Enddate."' and to_technician!='' ";
 		}
 		else if($_POST["Showrequest"]==4)
 		{
-			$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=4 and is_active='1' and request_date>='".$startdate."' and request_date<='".$Enddate."' and to_technician!='' ";
+			$WhereQuery="WHERE job_status=4 and is_active='1' and request_date>='".$startdate."' and request_date<='".$Enddate."' and to_technician!='' ";
 		}
 		else if($_POST["Showrequest"]==5)
 		{
-			$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=5 and is_active='0' and request_date>='".$startdate."' and request_date<='".$Enddate."' and to_technician!='' ";
+			$WhereQuery="WHERE job_status=5 and is_active='0' and request_date>='".$startdate."' and request_date<='".$Enddate."' and to_technician!='' ";
 		}
 		else if($_POST["Showrequest"]==6)
 		{
-			$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and request_date>='".$startdate."' and request_date<='".$Enddate."' and to_technician!='' ";
+			$WhereQuery="WHERE and request_date>='".$startdate."' and request_date<='".$Enddate."' and to_technician!='' ";
 		}
 		else
 		{ 
-			$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status IN ('0','1','2','3') and is_active='1' and request_date>='".$startdate."' and request_date<='".$Enddate."' and to_technician!='' ";
+			$WhereQuery="WHERE job_status IN ('0','1','2','3') and is_active='1' and request_date>='".$startdate."' and request_date<='".$Enddate."' and to_technician!='' ";
 		}
 	}
 	else if($startdate=='' && $Enddate=='' && ($Showrequest!=0 || $_POST["Showrequest"]!='') && $Showday=='0')
 	{
 		if($_POST["Showrequest"]==1)
 		{
-			$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and is_active='1' and job_status=1 and to_technician!='' ";
+			$WhereQuery="WHERE is_active='1' and job_status=1 and to_technician!='' ";
 		}
 		else if($_POST["Showrequest"]==2)
 		{
-			$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and is_active='1' and job_status=2 and to_technician!='' ";
+			$WhereQuery="WHERE is_active='1' and job_status=2 and to_technician!='' ";
 		}
 		else if($_POST["Showrequest"]==3)
 		{
-			$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and is_active='1' and job_status=3 and to_technician!='' ";
+			$WhereQuery="WHERE is_active='1' and job_status=3 and to_technician!='' ";
 		}
 		else if($_POST["Showrequest"]==4)
 		{
-			$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and is_active='1' and job_status=4 and to_technician!='' ";
+			$WhereQuery="WHERE is_active='1' and job_status=4 and to_technician!='' ";
 		}
 		else if($_POST["Showrequest"]==5)
 		{
-			$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and is_active='0' and job_status=5 and to_technician!='' ";
+			$WhereQuery="WHERE is_active='0' and job_status=5 and to_technician!='' ";
 		}
 		else if($_POST["Showrequest"]==6)
 		{
-			$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and to_technician!='' ";
+			$WhereQuery="WHERE to_technician!='' ";
 		}
 		else
 		{ 
-			$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and is_active='1' and job_status IN ('0','1','2','3') and to_technician!='' ";
+			$WhereQuery="WHERE is_active='1' and job_status IN ('0','1','2','3') and to_technician!='' ";
 		
 		}
 	}
@@ -110,31 +110,31 @@ if(isset($_POST["submit"]))
 			  
 			if($_POST["Showrequest"]==1)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=1 and request_date>='".$todayStdate."' and is_active='1' and request_date<='".$todayEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status=1 and request_date>='".$todayStdate."' and is_active='1' and request_date<='".$todayEddate."' and to_technician!='' ";
 			}
 			else if($_POST["Showrequest"]==2)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=2 and request_date>='".$todayStdate."' and is_active='1' and request_date<='".$todayEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status=2 and request_date>='".$todayStdate."' and is_active='1' and request_date<='".$todayEddate."' and to_technician!='' ";
 			}
 			else if($_POST["Showrequest"]==3)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=3 and request_date>='".$todayStdate."' and is_active='1' and request_date<='".$todayEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status=3 and request_date>='".$todayStdate."' and is_active='1' and request_date<='".$todayEddate."' and to_technician!='' ";
 			}
 			else if($_POST["Showrequest"]==4)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=4 and request_date>='".$todayStdate."' and is_active='1' and request_date<='".$todayEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status=4 and request_date>='".$todayStdate."' and is_active='1' and request_date<='".$todayEddate."' and to_technician!='' ";
 			}
 			else if($_POST["Showrequest"]==5)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=5 and request_date>='".$todayStdate."' and is_active='0' and request_date<='".$todayEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status=5 and request_date>='".$todayStdate."' and is_active='0' and request_date<='".$todayEddate."' and to_technician!='' ";
 			}
 			else if($_POST["Showrequest"]==6)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and request_date>='".$todayStdate."' and request_date<='".$todayEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE request_date>='".$todayStdate."' and request_date<='".$todayEddate."' and to_technician!='' ";
 			}
 			else
 			{ 
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status IN ('0','1','2','3') and is_active='1' and request_date>='".$todayStdate."' and request_date<='".$todayEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status IN ('0','1','2','3') and is_active='1' and request_date>='".$todayStdate."' and request_date<='".$todayEddate."' and to_technician!='' ";
 			
 			}
 			
@@ -146,31 +146,31 @@ if(isset($_POST["submit"]))
 			  
 			if($_POST["Showrequest"]==1)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=1 and request_date>='".$tomorrowStdate."' and is_active='1' and request_date<='".$tomorrowEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status=1 and request_date>='".$tomorrowStdate."' and is_active='1' and request_date<='".$tomorrowEddate."' and to_technician!='' ";
 			}
 			else if($_POST["Showrequest"]==2)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=2 and request_date>='".$tomorrowStdate."' and is_active='1' and request_date<='".$tomorrowEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status=2 and request_date>='".$tomorrowStdate."' and is_active='1' and request_date<='".$tomorrowEddate."' and to_technician!='' ";
 			}
 			else if($_POST["Showrequest"]==3)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=3 and request_date>='".$tomorrowStdate."' and is_active='1' and request_date<='".$tomorrowEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status=3 and request_date>='".$tomorrowStdate."' and is_active='1' and request_date<='".$tomorrowEddate."' and to_technician!='' ";
 			}
 			else if($_POST["Showrequest"]==4)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=4 and request_date>='".$tomorrowStdate."' and is_active='1' and request_date<='".$tomorrowEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status=4 and request_date>='".$tomorrowStdate."' and is_active='1' and request_date<='".$tomorrowEddate."' and to_technician!='' ";
 			}
 			else if($_POST["Showrequest"]==5)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=5 and request_date>='".$tomorrowStdate."' and is_active='5' and request_date<='".$tomorrowEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status=5 and request_date>='".$tomorrowStdate."' and is_active='5' and request_date<='".$tomorrowEddate."' and to_technician!='' ";
 			}
 			else if($_POST["Showrequest"]==6)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and request_date>='".$tomorrowStdate."' and request_date<='".$tomorrowEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE request_date>='".$tomorrowStdate."' and request_date<='".$tomorrowEddate."' and to_technician!='' ";
 			}
 			else
 			{ 
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status IN ('0','1','2','3') and is_active='1' and request_date>='".$tomorrowStdate."' and request_date<='".$tomorrowEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status IN ('0','1','2','3') and is_active='1' and request_date>='".$tomorrowStdate."' and request_date<='".$tomorrowEddate."' and to_technician!='' ";
 			
 			}
 		 }
@@ -181,31 +181,31 @@ if(isset($_POST["submit"]))
 			  
 			 if($_POST["Showrequest"]==1)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=1 and request_date>='".$nextDayStdate."' and is_active='1' and request_date<='".$nextDayEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status=1 and request_date>='".$nextDayStdate."' and is_active='1' and request_date<='".$nextDayEddate."' and to_technician!='' ";
 			}
 			else if($_POST["Showrequest"]==2)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=2 and request_date>='".$nextDayStdate."' and is_active='1' and request_date<='".$nextDayEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status=2 and request_date>='".$nextDayStdate."' and is_active='1' and request_date<='".$nextDayEddate."' and to_technician!='' ";
 			}
 			else if($_POST["Showrequest"]==3)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=3 and request_date>='".$nextDayStdate."' and is_active='1' and request_date<='".$nextDayEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status=3 and request_date>='".$nextDayStdate."' and is_active='1' and request_date<='".$nextDayEddate."' and to_technician!='' ";
 			}
 			else if($_POST["Showrequest"]==4)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=4 and request_date>='".$nextDayStdate."' and is_active='1' and request_date<='".$nextDayEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status=4 and request_date>='".$nextDayStdate."' and is_active='1' and request_date<='".$nextDayEddate."' and to_technician!='' ";
 			}
 			else if($_POST["Showrequest"]==5)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status=5 and request_date>='".$nextDayStdate."' and is_active='0' and request_date<='".$nextDayEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status=5 and request_date>='".$nextDayStdate."' and is_active='0' and request_date<='".$nextDayEddate."' and to_technician!='' ";
 			}
 			else if($_POST["Showrequest"]==6)
 			{
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and request_date>='".$nextDayStdate."' and request_date<='".$nextDayEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE request_date>='".$nextDayStdate."' and request_date<='".$nextDayEddate."' and to_technician!='' ";
 			}
 			else
 			{ 
-				$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and job_status IN ('0','1','2','3') and is_active='1' and request_date>='".$nextDayStdate."' and request_date<='".$nextDayEddate."' and to_technician!='' ";
+				$WhereQuery="WHERE job_status IN ('0','1','2','3') and is_active='1' and request_date>='".$nextDayStdate."' and request_date<='".$nextDayEddate."' and to_technician!='' ";
 			
 			}
 		 }
@@ -214,7 +214,7 @@ if(isset($_POST["submit"]))
 }
 else
 {			
-	$WhereQuery="WHERE loginid='".$_SESSION['user_id']."' and to_technician!='' and job_status!=5 and is_active='1' 
+	$WhereQuery="WHERE to_technician!='' and job_status!=5 and is_active='1' 
 	and request_date<='".$currentdate."' ";
 }
   
@@ -325,7 +325,7 @@ $get_job_data = select_query("SELECT * FROM $db_name.all_job_details ". $WhereQu
 			<a href="add-request-job.php" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Add Ticket Request</a>
           </div>
           <div class="widget-content nopadding">
-            <table class="table table-bordered data-table table-responsive-lg">
+            <table class="table table-bordered data-table table-responsive-lg" id="filtertable">
               <thead>
                 <tr>
                     <th nowrap>S No.</th>
@@ -405,7 +405,10 @@ $get_job_data = select_query("SELECT * FROM $db_name.all_job_details ". $WhereQu
     </div>
   </div>
 </div>
-
+<?php
+	$filename= basename($_SERVER['REQUEST_URI'], '?' . $_SERVER['QUERY_STRING']);
+	require_once ('filtertable.php');
+?>
 <!--Footer-part-->
 <div class="row-fluid">
   <div id="footer" class="span12"> <?php echo date('Y');?> &copy; Gtrac. All Rights Reserved. </div>

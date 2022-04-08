@@ -3,8 +3,7 @@ include('inc/header.php');
 
 $currentdate = date('Y-m-d');
   
-  
-$get_job_data = select_query("SELECT * FROM $db_name.all_job_details WHERE loginid='".$_SESSION['user_id']."' and to_technician is null  and job_status!=5 and is_active='1' and request_date<='".$currentdate."'  order by id desc ");
+$get_job_data = select_query("SELECT * FROM $db_name.all_job_details WHERE to_technician is null  and job_status!=5 and is_active='1' and request_date<='".$currentdate."'  order by id desc ");
 
 //echo "<pre>";print_r($get_job_data);die;
 ?>
@@ -57,10 +56,10 @@ $get_job_data = select_query("SELECT * FROM $db_name.all_job_details WHERE login
           <div class="widget-title"> <span class="icon"><i class="icon-th"></i></span>
             <h5>Customer Service/Complaint</h5>
               
-			<!--<a href="add-request-job.php" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Add Ticket Request</a>-->
+			<a href="download_excel.php?action=view-fsr-request-job" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Export Excel</a>
           </div>
           <div class="widget-content nopadding">
-            <table class="table table-bordered data-table table-responsive-lg">
+            <table class="table table-bordered data-table table-responsive-lg" id="filtertable">
               <thead>
                 <tr>
                     <th nowrap>S No.</th>
@@ -126,7 +125,10 @@ $get_job_data = select_query("SELECT * FROM $db_name.all_job_details WHERE login
     </div>
   </div>
 </div>
-
+<?php
+	$filename= basename($_SERVER['REQUEST_URI'], '?' . $_SERVER['QUERY_STRING']);
+	require_once ('filtertable.php');
+?>
 <!--Footer-part-->
 <div class="row-fluid">
   <div id="footer" class="span12"> <?php echo date('Y');?> &copy; Gtrac. All Rights Reserved. </div>
@@ -141,6 +143,7 @@ $get_job_data = select_query("SELECT * FROM $db_name.all_job_details WHERE login
 <script type="text/javascript" src="<?php echo __SITE_URL;?>/js/matrix.js"></script> 
 <script type="text/javascript" src="<?php echo __SITE_URL;?>/js/matrix.tables.js"></script>
 <script type="text/javascript" src="<?php echo __SITE_URL;?>/js/libs/bootstrap/bootstrap-datetimepicker.js" charset="UTF-8"></script>
+
 <script type="text/javascript">
               
 function closeRecd(id){

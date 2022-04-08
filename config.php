@@ -46,6 +46,7 @@ function getcountRow($query)
 
 function select_query($query,$condition=0)
 {
+	$arr = array();
 	global $dblink2;
 	$hostname2 = "203.115.101.54";
 	$username2 = "gtrac";

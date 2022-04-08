@@ -106,9 +106,27 @@ if (isset($_POST['save_people'])) {
 	
 	//if($_POST['installation_date']==''){$inst_date = "0000-00-00";}else{$inst_date = $_POST['installation_date'];}
 		
-	if($_POST['from_date']==''){$from_date = "0000-00-00";}else{$from_date = $_POST['from_date'];}
-	if($_POST['to_date']==''){$to_date = "0000-00-00";}else{$to_date = $_POST['to_date'];}
+	if($_POST['from_date']==''){
+		$from_date	=	"0000-00-00";
+		$to_date	=	"0000-00-00";
+	}else{
+		$from_date = $_POST['from_date'];
+		///detect one day
+		$detuctOneDay= date('Y-m-d', strtotime('-1 day', strtotime($from_date)));
+		if($warranty_month=="12"){
+			$to_date = date('Y-m-d', strtotime("+12 months", strtotime($detuctOneDay)));
+		}elseif($warranty_month=="15"){
+			$to_date = date('Y-m-d', strtotime("+15 months", strtotime($detuctOneDay)));
+		}elseif($warranty_month=="18"){
+			$to_date = date('Y-m-d', strtotime("+15 months", strtotime($detuctOneDay)));
+		}else{
+			$to_date = "0000-00-00";
+		}
+	}
 	
+	
+	// if($_POST['to_date']==''){$to_date = "0000-00-00";}else{$to_date = $_POST['to_date'];}
+	// exit("end");
 	// if($_POST['amc_date']==''){$amc_date = "0000-00-00";}else{$amc_date = $_POST['amc_date'];}
 		
 	$total_purchase = $_POST['total_purchase'];	
@@ -459,7 +477,7 @@ if (isset($_POST['save_people'])) {
                   <span class="add-on"><i class="icon-th"></i></span>
                 </div>
                 
-                <div class="controls date form_date" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                <div class="controls date" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
                   <input class="mandatory date-picker" name="to_date" id="to_date" type="text" value="<?=$_POST['to_date'];?>" placeholder="To Date" readonly>
                   <span class="add-on"><i class="icon-th"></i></span>
                 </div>
@@ -542,12 +560,12 @@ $( document ).ready(function(){
 	
     $('.save_step_1').click(function(e) {
 		// alert('Hii');
+		
 		// return false;
 		var name = $("#name").val();
 		var number = $("#number").val();
-		var toDate= $("#to_date").val();
-		var amcDate= $("#amc_date").val();
-						
+		var from_date= $("#from_date").val();
+		console.log(from_date);			
 		if( name == '' ) {
 			$(".error_display").css("display","block");
 			$("#print_err").html(" Please Enter Name.");
@@ -678,15 +696,40 @@ $( document ).ready(function(){
 			$(".error_display").css("display","none");
 		}
 		
-		if(new Date(toDate) > new Date(amcDate))
-		{
-			$(".error_display").css("display","block");
-			$("#print_err").html(" AMC start date should be equal to or greater than warranty end date");
-			return false;
-		}else{
-			$("#print_err").html("");
-			$(".error_display").css("display","none");
+		if(from_date!=""){
+			var warranty_month = $("#warranty_month").val();
+			if(warranty_month=="12"){
+				var convertFromDate= new Date(from_date);
+				convertFromDate.setDate(convertFromDate.getDate() - 1);
+				convertFromDate.setMonth( convertFromDate.getMonth()+12 );
+				console.log("convertFromDate="+convertFromDate);
+				var setNewDate = convertFromDate.toISOString().slice(0, 10);
+				$("#to_date").val(setNewDate);
+			}else if(warranty_month=="15"){
+				var convertFromDate= new Date(from_date);
+				convertFromDate.setDate(convertFromDate.getDate() - 1);
+				convertFromDate.setMonth( convertFromDate.getMonth()+15 );
+				console.log("convertFromDate="+convertFromDate);
+				var setNewDate = convertFromDate.toISOString().slice(0, 10);
+				$("#to_date").val(setNewDate);
+			}else if(warranty_month=="18"){
+				var convertFromDate= new Date(from_date);
+				convertFromDate.setDate(convertFromDate.getDate() - 1);
+				convertFromDate.setMonth( convertFromDate.getMonth()+18 );
+				console.log("convertFromDate="+convertFromDate);
+				var setNewDate = convertFromDate.toISOString().slice(0, 10);
+				$("#to_date").val(setNewDate);
+			}
 		}
+		// if(new Date(from_date) > new Date(to_date))
+		// {
+			// $(".error_display").css("display","block");
+			// $("#print_err").html(" AMC start date should be equal to or greater than to date");
+			// return false;
+		// }else{
+			// $("#print_err").html("");
+			// $(".error_display").css("display","none");
+		// }
 		/*var total_purc = $("#total_purchase").val();
 						
 		if( total_purc == '' ) {
