@@ -116,7 +116,7 @@ function array_msort($array, $cols)
 
 function sendMail($email,$msg,$TicketNo) {
    // $email="ankur@g-trac.in,priya@g-trac.in,harish@g-trac.in";
-	$email= "abhishek@gtrac.in";
+	$email= "abhisirohi72@gmail.com";
 	if($msg!="")
 	{
 		$mail=new PHPMailer();

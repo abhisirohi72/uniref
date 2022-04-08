@@ -1,10 +1,13 @@
 <?php 
 include("config.php");
+ini_set('max_execution_time', '0');
 include("C:/xampp/htdocs/send_alert/phpmailer.lang-en.php");
 include("C:/xampp/htdocs/send_alert/class.phpmailer.php");
 include("C:/xampp/htdocs/send_alert/class.smtp.php");
 include("send_email.php");
 $sendMail= new SendEmail();
+// echo "SELECT id, name, email_id, MONTH(dob) AS month, DATE_FORMAT(dob, '%d') AS date FROM customer_details HAVING month= '".date("n")."' and date= '".date("d")."'";
+// exit;
 //get all today birthday data
 $getDetails= select_query("SELECT id, name, email_id, MONTH(dob) AS month, DATE_FORMAT(dob, '%d') AS date FROM customer_details HAVING month= '".date("n")."' and date= '".date("d")."'");
 

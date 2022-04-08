@@ -86,7 +86,7 @@ padding: 3px 16px!important;
 <div id="user-nav" class="navbar navbar-inverse">
   <ul class="nav">
 	
-    <?php if($id_roles==1 || $id_roles==6){?>
+    <?php if($id_roles==1 || $id_roles==6 || $id_roles==2){?>
     
     <li class="dropdown" id="menu-main"><a href="#" data-toggle="dropdown" data-target="#menu-main" class="dropdown-toggle"> <i class="icon icon-envelope"></i> <span class="text">Uni-ref Start</span> <b class="caret"></b></a>
       <ul class="dropdown-menu">
@@ -172,6 +172,21 @@ padding: 3px 16px!important;
     
     
     <?php } ?>
+	<li class="dropdown" id="menu-subUsers">
+		<a href="#" data-toggle="dropdown" data-target="#menu-subUsers" class="dropdown-toggle"> 
+			<i class="icon icon-envelope"></i> 
+			<span class="text">Sub Users</span> 
+			<b class="caret"></b>
+		</a>
+         <ul class="dropdown-menu">
+			<li>
+				<a class="sInbox" title="" href="view_sub_users.php">
+					<i class="icon-arrow-up"></i> 
+					Add/ Modify/ Delete Sub Users
+				</a>
+			</li>
+		</ul>
+	</li>
     
     <li class=""><a title="" href="logout.php"><i class="icon icon-share-alt"></i> <span class="text">Logout</span></a></li>    
     
