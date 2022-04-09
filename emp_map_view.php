@@ -5,7 +5,7 @@ require("config.php");
 
 $id_roles=$_SESSION['id_roles'];
 
-$tech_Id = select_query("select id from $db_name.technicians_login_details where loginid='".$_SESSION['user_id']."' and is_active='1' group by id");
+$tech_Id = select_query("select id from $db_name.technicians_login_details where is_active='1' group by id");
 //echo "<pre>";print_r($tech_Id);die;
 for($ecl=0;$ecl<count($tech_Id);$ecl++)
 {
@@ -17,7 +17,7 @@ $tech_currentId = substr($tech_currentId,0,strlen($tech_currentId)-1);
 $currentdate = date('Y-m-d');
 
 $get_tech_loc = select_query("SELECT * FROM $db_name.installer_attendence_tbl WHERE inst_id IN ($tech_currentId) and req_date='".$currentdate."'
-and is_active='1' and login_id='".$_SESSION['user_id']."'");
+and is_active='1'");
 		
 //echo "<pre>";print_r($get_tech_loc);die;
 

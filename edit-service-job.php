@@ -182,7 +182,7 @@ function sendMail($email,$msg,$TicketNo, $service_type="") {
 
 $req_id = base64_decode($_REQUEST['id']);
 
-echo "SELECT * FROM $db_name.all_job_details WHERE id='".$req_id."'";
+// echo "SELECT * FROM $db_name.all_job_details WHERE id='".$req_id."'";
 
 $get_edit_recd = select_query("SELECT * FROM $db_name.all_job_details WHERE id='".$req_id."'");
 //echo "<pre>";print_r($get_edit_recd);die;

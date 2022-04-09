@@ -157,8 +157,8 @@ $get_tech_recd_edit = select_query("SELECT id,concat(emp_name,' / ',mobile_no) a
 	
 
 if (isset($_POST['save_people'])) {
-	error_reporting(E_ALL);
-ini_set('display_errors', '1');
+	// error_reporting(E_ALL);
+// ini_set('display_errors', '1');
 	//echo "<pre>";print_r($_POST);die;
 	
 	$cust_nameData = $_POST['cust_name'];
@@ -303,7 +303,7 @@ ini_set('display_errors', '1');
 		$message_status = send_notification_android2($tokens,$Notificato_msg,$androidkey);
 			
 	}*/
-	echo "result=".$result;
+	// echo "result=".$result;
 	if($result) {
 
 		echo "<script>window.location.href='view-request-job.php'</script>";

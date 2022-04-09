@@ -172,6 +172,7 @@ padding: 3px 16px!important;
     
     
     <?php } ?>
+	<?php if($_SESSION['id_roles']=="1"){?>
 	<li class="dropdown" id="menu-subUsers">
 		<a href="#" data-toggle="dropdown" data-target="#menu-subUsers" class="dropdown-toggle"> 
 			<i class="icon icon-envelope"></i> 
@@ -187,6 +188,7 @@ padding: 3px 16px!important;
 			</li>
 		</ul>
 	</li>
+	<?php }?>
     
     <li class=""><a title="" href="logout.php"><i class="icon icon-share-alt"></i> <span class="text">Logout</span></a></li>    
     
