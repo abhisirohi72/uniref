@@ -206,8 +206,8 @@ if (isset($_POST['save_people'])) {
 		$priority_type = "High";
 		
 	} else {
-	
-		$symptom = $_POST['symptom'];
+		$sympton_change_to_string= implode("~||~",$_POST['symptom']);
+		$symptom = $sympton_change_to_string;
 		$priority_type = $_POST['priority_type'];
 	
 	}
@@ -457,7 +457,7 @@ if (isset($_POST['save_people'])) {
 			  unset($_SESSION['jobnotcreate_msg']);
 			  
 			  $get_cust_recd = select_query("SELECT id,concat(name,'##',cust_id) as cust_id,concat(company_name,' / ',cust_id) as cust_name,
-			  company_name, phone_no FROM $db_name.customer_details WHERE is_active='1' ");
+			  company_name, phone_no, email_id FROM $db_name.customer_details WHERE is_active='1' ");
 			  
 			  $get_tech_recd = select_query("SELECT id,concat(emp_name,' / ',mobile_no) as tech_name,mobile_no  FROM 
 			  $db_name.technicians_login_details WHERE is_active='1' ");
@@ -473,7 +473,7 @@ if (isset($_POST['save_people'])) {
                         <select class="selectpicker pull-left sepratesize" data-live-search="true" title="Select Company Name/ ID" name="cust_name" id="cust_name" onchange="userDetailsShow(this.value)">
                           <!--<option value="">Select Phone Number</option>-->
                         <?php for($rq=0;$rq<count($get_cust_recd);$rq++) { ?>
-                          <option value="<?=$get_cust_recd[$rq]['cust_id'];?>"><?=$get_cust_recd[$rq]['cust_name'];?></option>
+                          <option value="<?=$get_cust_recd[$rq]['cust_id'];?>" email_id="<?php echo $get_cust_recd[$rq]['email_id'];?>"><?=$get_cust_recd[$rq]['cust_name'];?></option>
                           <!--<input type="text" name="number" maxlength="10" id="number"  class="mandatory" placeholder="Number *" />-->
                         <? } ?>
                         </select>
@@ -533,7 +533,7 @@ if (isset($_POST['save_people'])) {
               </div>
               
               <div class="control-group">
-                <label class="control-label">Work Type:<font color="red">* </font></label>
+                <label class="control-label">Work Type:</label>
                 <div class="controls">
                   <!--<input type="text" name="work_type" id="work_type"  class="mandatory" placeholder="Work Type" />-->
                   <select name="work_type" id="work_type" class="form-control">
@@ -590,8 +590,8 @@ if (isset($_POST['save_people'])) {
               <div class="control-group" id="Symptom_show" style="display:none">
                 <label class="control-label">Symptom:<font color="red">* </font></label>
                 <div class="controls">
-                  <select name="symptom" id="symptom" class="form-control">
-                      <option value="">Select Symptom</option>
+                  <select name="symptom[]" multiple id="symptom" class="form-control" size="5" style="width:300px;">
+                      <option value="" disable="disable">Select Symptom</option>
                       <? for($sym=0;$sym<count($get_Symptom);$sym++) { ?>
                       <option value="<?=$get_Symptom[$sym]['sym_name'];?>"><?=$get_Symptom[$sym]['sym_name'];?></option>
                       <? } ?>
@@ -612,7 +612,7 @@ if (isset($_POST['save_people'])) {
               
               
               <div class="control-group" id="Priority_show" style="display:none">
-                <label class="control-label">Priority Type:<font color="red">* </font></label>
+                <label class="control-label">Priority Type:</label>
                 <div class="controls">
                   <select name="priority_type" id="priority_type" class="form-control">
                       <option value="">Select Priority Type</option>
@@ -656,7 +656,7 @@ if (isset($_POST['save_people'])) {
               </div>
               
               <div class="control-group">
-                <label class="control-label">Total Working Hours Req:<font color="red">* </font></label>
+                <label class="control-label">Total Working Hours Req:</label>
                 <div class="controls">
                   <input type="text" name="total_working_hrs" id="total_working_hrs"  class="mandatory" placeholder="Total Working Hours Req" />
                   <span id="branch_error"></span> </div>
@@ -755,12 +755,12 @@ $( document ).ready(function(){
 			return false;
 		}
 		
-		var work_type = $("#work_type").val();
-		if( work_type == '' ) {
-			$(".error_display").css("display","block");
-			$("#print_err").html(" Please Select Work Type.");
-			return false;
-		}
+		// var work_type = $("#work_type").val();
+		// if( work_type == '' ) {
+			// $(".error_display").css("display","block");
+			// $("#print_err").html(" Please Select Work Type.");
+			// return false;
+		// }
 		
 		/*var call_type = $("#call_type").val();
 		if( call_type == '' ) {
@@ -792,12 +792,12 @@ $( document ).ready(function(){
 				return false;
 			}
 					
-			var priority_type = $("#priority_type").val();
-			if( priority_type == '' ) {
-				$(".error_display").css("display","block");
-				$("#print_err").html(" Please Select Priority Type.");
-				return false;
-			}
+			// var priority_type = $("#priority_type").val();
+			// if( priority_type == '' ) {
+				// $(".error_display").css("display","block");
+				// $("#print_err").html(" Please Select Priority Type.");
+				// return false;
+			// }
 		
 		}
 		
@@ -834,12 +834,12 @@ $( document ).ready(function(){
 			}
 		}
 		
-		var total_working_hrs = $("#total_working_hrs").val();
-		if( total_working_hrs == '' ) {
-			$(".error_display").css("display","block");
-			$("#print_err").html(" Please Enter Total Working Hours.");
-			return false;
-		}
+		// var total_working_hrs = $("#total_working_hrs").val();
+		// if( total_working_hrs == '' ) {
+			// $(".error_display").css("display","block");
+			// $("#print_err").html(" Please Enter Total Working Hours.");
+			// return false;
+		// }
 		
 		/*var fields = phone_number.split('##');
 		var day_status = fields[2];

@@ -161,6 +161,7 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
                   	<th>Mobile No</th>
                     <th>Location</th>
                     <th>Battery Level</th>
+					<th>GPS</th>
                     <th>Location Time</th>
                     <th>Date</th>
                     <th>View</th>
@@ -186,6 +187,7 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
                   <td><?php echo $get_people[$emp]['mobile_no']; ?></td>
                   <td><?php echo $get_tech_loc[0]['job_location']; ?></td>
                   <td><?php echo $get_tech_loc[0]['battery_level']; ?></td>
+				  <td></td>
                   <td><?php echo $get_tech_loc[0]['location_time']; ?></td>  
                   <td><?php echo $get_tech_loc[0]['Date_of_journey']; ?></td> 
                   
@@ -193,7 +195,7 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
                   <a class="btn btn-info"  onclick="window.open('<? echo __SITE_URL;?>/snailmapmyindia_new.php?vid=<?=$get_people[$emp]['id']?>&requestTime=<?=$startdate?>&branchid=<?=$_SESSION['user_id']?>','popUpWindow','height=600,width=900,left=100,top=50,scrollbars=yes,menubar=no'); return false;" >Map</a>
                   <br /><br />
                   <a onclick="Show_info('GetAllLocationWithDate','<?php echo $get_people[$emp]['mobile_no'];?>','<?php echo $get_people[$emp]['id'];?>','<?php echo $_SESSION['user_id'];?>','<?php echo $startdate;?>');" class="btn btn-info" data-toggle="modal" data-target=".bs-example-modal-sm">View </a>
-                  
+                  <a onclick="" class="btn btn-info" data-toggle="modal" data-target=".bs-example-modal-sm">Routes </a>
                  
                   </td> 
 			

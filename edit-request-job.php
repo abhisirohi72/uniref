@@ -2,6 +2,9 @@
 include('inc/header.php');
 
 $user_id = $_SESSION['user_id'];
+include("C:/xampp/htdocs/send_alert/phpmailer.lang-en.php");
+include("C:/xampp/htdocs/send_alert/class.phpmailer.php");
+include("C:/xampp/htdocs/send_alert/class.smtp.php");
 
 function googlatlang($address)
 {
@@ -77,6 +80,67 @@ function array_msort($array, $cols)
 	return $ret;
 }
 
+function sendMail($email,$msg,$TicketNo) {
+   // $email="ankur@g-trac.in,priya@g-trac.in,harish@g-trac.in";
+	$email= "abhisirohi72@gmail.com";
+	if($msg!="")
+	{
+		$mail=new PHPMailer();
+		$Subject=" Uni-Ref Ticket Request -".$TicketNo;
+		$mail->IsSMTP();
+		$mail->SMTPAuth   = true;     // enable SMTP authentication
+		$mail->SMTPSecure = "ssl";    // sets the prefix to the servier
+		$mail->Host       = "smtp.gmail.com";      // sets GMAIL as the SMTP server
+		$mail->Port       = 465;      // set the SMTP port
+		//$mail->Username   = "priya@g-trac.in";  // GMAIL username
+		//$mail->Password   = "manash4u2";   // GMAIL password
+		$mail->Username   = "unirefservices@gmail.com";  // GMAIL username
+		$mail->Password   = "U12345678!";   // GMAIL password
+
+		//$mail->Username   = "anoop@g-trac.in";  // GMAIL username
+		// $mail->Password   = "omsairam";   // GMAIL password
+		
+		$mail->From       = "info@g-trac.in";
+		$mail->FromName   = "G-trac";
+		//$mail->Body       = $message;//HTML Body
+		$mail->AltBody    = ""; //Text Body
+		$mail->WordWrap   = 50; // set word wrap
+		
+		$mail->AddReplyTo("sarvottma@gtrac.in","G-trac");
+		$mail->IsHTML(true);
+		
+		
+		$mail->Subject    = $Subject;
+	
+	
+		//echo "sdfsdf";
+		$arremail1=explode(",",$email);
+		//print_r($arremail1);die();
+		
+		for($ec=0;$ec<count($arremail1);$ec++)
+		{
+			$mail->AddAddress($arremail1[$ec],$arremail1[$ec]);
+		}
+		
+		//$mail->AddAddress($email,"email");
+		//$mail->AddCC("harish@g-trac.in","G-Trac");
+		$mail->AddCC("unirefindia@gmail.com","Uniref");
+		//$mail->AddCC("service.unirefindia@gmail.com","Uniref");
+		
+		$textTosend.= $msg;
+		
+		/*$textTosend .="Dear Recipients,<br/><br/><br/>The current temperature of following chambers are out of range and require attention:<br/>".$msg;*/
+		$mail->IsHTML(true);
+		//$mail->AddAttachment(__DOCUMENT_ROOT . '/reports/excel_reports/IdleMahaveera' . date("Y-m-d") . ".xls", 'IdleDaily_Report.xls');
+		$mail->Body = $textTosend . " <br/><br/>UNI-REF <br/>Jaipur (India)";
+		$mail->Send();
+		$mail->ClearAddresses();
+		$mail->ClearAttachments();
+	
+	}
+	
+}
+
 $req_id = base64_decode($_REQUEST['id']);
 // echo $db_name;
 // exit();
@@ -93,7 +157,8 @@ $get_tech_recd_edit = select_query("SELECT id,concat(emp_name,' / ',mobile_no) a
 	
 
 if (isset($_POST['save_people'])) {
-	
+	error_reporting(E_ALL);
+ini_set('display_errors', '1');
 	//echo "<pre>";print_r($_POST);die;
 	
 	$cust_nameData = $_POST['cust_name'];
@@ -214,8 +279,15 @@ if (isset($_POST['save_people'])) {
 	$condition = array('id' => $req_id, 'is_active' => 1);            
 	$result = update_query($db_name.'.all_job_details', $update_array, $condition);
 	
+	$techData = select_query("SELECT * FROM $db_name.technicians_login_details WHERE id='".$tech_id."' and is_active='1' ");
 	
-		
+	$textTosend.='Hi '.$cust_name.',<br>';
+	$textTosend.='<br>Your '.$service_type.' Request has been Received for '.date("dS F Y",strtotime($req_date)).'.<br>';
+	$textTosend.= $techData[0]['emp_name'].'(+91'.$techData[0]['mobile_no'].') has been assigned to your Service Booking.<br> For Any Help, Please go to your Application and view your status for better experience.<br>';
+	/*$textTosend.='UNI-REF<br>';
+	$textTosend.='Jaipur(India)';*/
+	
+	sendMail($cust_email_id,$textTosend,$jobId);	
 	
 	/*$tokenResult = select_query("SELECT device_key as token FROM $db_name.installer_app_verify where phone_no='".$phone."' and is_active='1' order by id desc limit 0,1");
 	//echo "<pre>";print_r($tokenResult);die;
@@ -231,7 +303,7 @@ if (isset($_POST['save_people'])) {
 		$message_status = send_notification_android2($tokens,$Notificato_msg,$androidkey);
 			
 	}*/
-	
+	echo "result=".$result;
 	if($result) {
 
 		echo "<script>window.location.href='view-request-job.php'</script>";
@@ -385,7 +457,7 @@ if (isset($_POST['save_people'])) {
               </div>-->
               
               <div class="control-group">
-                <label class="control-label">Work Type:<font color="red">* </font></label>
+                <label class="control-label">Work Type:</label>
                 <div class="controls">
                   <!--<input type="text" name="work_type" id="work_type"  class="mandatory" placeholder="Work Type" />-->
                   <select name="work_type" id="work_type" class="form-control">
@@ -473,9 +545,9 @@ if (isset($_POST['save_people'])) {
               
               
               <div class="control-group" id="Priority_show" style="display:none">
-                <label class="control-label">Priority Type:<font color="red">* </font></label>
+                <label class="control-label">Priority Type:</label>
                 <div class="controls">
-                  <select name="priority_type" id="priority_type" class="form-control">
+                  <select name="priority_type" id="priority_typepriority_type" class="form-control">
                       <option value="">Select Priority Type</option>
                       <option value="Low" <?php if($get_edit_recd[0]['priority_type'] == 'Low' ) { echo "selected='selected'";}?>>Low</option>
                       <option value="High" <?php if($get_edit_recd[0]['priority_type'] == 'High' ) { echo "selected='selected'";}?>>High</option>
@@ -518,7 +590,7 @@ if (isset($_POST['save_people'])) {
               </div>
               
               <div class="control-group">
-                <label class="control-label">Total Working Hours Req:<font color="red">* </font></label>
+                <label class="control-label">Total Working Hours Req:</label>
                 <div class="controls">
                   <input type="text" name="total_working_hrs" id="total_working_hrs" value="<?=$get_edit_recd[0]['total_working_hrs_req']?>" class="mandatory" placeholder="Total Working Hours Req" />
                   <span id="branch_error"></span> </div>
@@ -617,12 +689,12 @@ $( document ).ready(function(){
 			return false;
 		}
 		
-		var work_type = $("#work_type").val();
-		if( work_type == '' ) {
-			$(".error_display").css("display","block");
-			$("#print_err").html(" Please Enter Work Type.");
-			return false;
-		}
+		// var work_type = $("#work_type").val();
+		// if( work_type == '' ) {
+			// $(".error_display").css("display","block");
+			// $("#print_err").html(" Please Enter Work Type.");
+			// return false;
+		// }
 		
 		/*var call_type = $("#call_type").val();
 		if( call_type == '' ) {
@@ -655,12 +727,12 @@ $( document ).ready(function(){
 				return false;
 			}
 					
-			var priority_type = $("#priority_type").val();
-			if( priority_type == '' ) {
-				$(".error_display").css("display","block");
-				$("#print_err").html(" Please Select Priority Type.");
-				return false;
-			}
+			// var priority_type = $("#priority_type").val();
+			// if( priority_type == '' ) {
+				// $(".error_display").css("display","block");
+				// $("#print_err").html(" Please Select Priority Type.");
+				// return false;
+			// }
 		
 		}
 		
@@ -698,12 +770,12 @@ $( document ).ready(function(){
 			}
 		}*/
 		
-		var total_working_hrs = $("#total_working_hrs").val();
-		if( total_working_hrs == '' ) {
-			$(".error_display").css("display","block");
-			$("#print_err").html(" Please Enter Total Working Hours.");
-			return false;
-		}
+		// var total_working_hrs = $("#total_working_hrs").val();
+		// if( total_working_hrs == '' ) {
+			// $(".error_display").css("display","block");
+			// $("#print_err").html(" Please Enter Total Working Hours.");
+			// return false;
+		// }
 		
 		/*var fields = phone_number.split('##');
 		var day_status = fields[2];

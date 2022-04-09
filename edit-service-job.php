@@ -182,11 +182,15 @@ function sendMail($email,$msg,$TicketNo, $service_type="") {
 
 $req_id = base64_decode($_REQUEST['id']);
 
+echo "SELECT * FROM $db_name.all_job_details WHERE id='".$req_id."'";
+
 $get_edit_recd = select_query("SELECT * FROM $db_name.all_job_details WHERE id='".$req_id."'");
 //echo "<pre>";print_r($get_edit_recd);die;
-			  
+
+// echo "SELECT id,concat(name,'##',cust_id) as cust_id,concat(name,' / ',cust_id) as cust_name, company_name, phone_no,email_id FROM $db_name.customer_details WHERE is_active='1' and cust_id='".$get_edit_recd[0]['customer_id']."' ";
+ 
 $get_cust_recd_edit = select_query("SELECT id,concat(name,'##',cust_id) as cust_id,concat(name,' / ',cust_id) as cust_name,
-			  company_name, phone_no FROM $db_name.customer_details WHERE is_active='1' and cust_id='".$get_edit_recd[0]['customer_id']."' ");
+			  company_name, phone_no,email_id FROM $db_name.customer_details WHERE is_active='1' and cust_id='".$get_edit_recd[0]['customer_id']."' ");
 
 
 $get_tech_recd_edit = select_query("SELECT id,concat(emp_name,' / ',mobile_no) as tech_name,mobile_no  FROM $db_name.technicians_login_details

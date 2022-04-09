@@ -59,6 +59,7 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
                 <tr>
                   <th>SNo</th>
                   <th>Name/ID</th>
+				  
                   <th>Mobile No</th>
                   <th>Home Address</th>
                   <th>Aadhar No</th>
@@ -75,6 +76,7 @@ $get_people = select_query("SELECT * FROM $db_name.technicians_login_details WHE
                 <tr class="gradeX">
                   <td><?php echo $emp+1; ?></td>
                   <td><?php echo $get_people[$emp]['emp_name'].'/'.$get_people[$emp]['technician_id']; ?></td>
+				  
                   <td><?php echo $get_people[$emp]['mobile_no']; ?></td>
                   <td title="<?php if($get_people[$emp]['home_address'] != ''){echo $get_people[$emp]['home_address'].', PIN-'.$get_people[$emp]['home_pin_code'];} ?>"><?=substr($get_people[$emp]['home_address'], 0, 20);?> ..</td>
                   

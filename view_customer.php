@@ -83,12 +83,13 @@ $get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE  is_
 				<a href="add_customer.php" style="float:right; margin:3px;" class="btn-harish btn-info-harish">Add Customers</a>
 			  <?php //}?>
           </div>
-          <div class="widget-content nopadding">
+          <div class="widget-content nopadding" style="overflow: auto;">
             <table class="table table-bordered data-table table-responsive-lg" id="filtertable">
               <thead>
                 <tr>
                   <th>SNo</th>
                   <th>Name/ID</th>
+				  <th>Email</th>
                   <th>Mobile No</th>
                   <th>Organisation Name</th>
                   <th>No of Service</th>
@@ -153,6 +154,7 @@ $get_customer = select_query("SELECT * FROM $db_name.customer_details WHERE  is_
                 <tr class="gradeX">
                   <td><?php echo $emp+1; ?></td>
                   <td><?php echo $get_customer[$emp]['name'].'/'.$get_customer[$emp]['cust_id']; ?></td>
+				  <td><?php echo $get_customer[$emp]['email_id'];?></td>
                   <td><?php echo $get_customer[$emp]['phone_no']; ?></td>
                   <td><?php echo $get_customer[$emp]['company_name']; ?></td>
                   <td><?php echo $get_customer[$emp]['amc_no_of_service']; ?></td>
