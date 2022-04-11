@@ -2,8 +2,8 @@
 include('inc/header.php');
 
 $req_id = base64_decode($_REQUEST['id']);
-
-$get_emp_recd = select_query("SELECT * FROM $db_name.technicians_login_details WHERE id='".$req_id."' and loginid='".$_SESSION['user_id']."' ");
+// echo "SELECT * FROM $db_name.technicians_login_details WHERE id='".$req_id."'";
+$get_emp_recd = select_query("SELECT * FROM $db_name.technicians_login_details WHERE id='".$req_id."'");
 //echo "<pre>";print_r($get_emp_recd);die;
 
 function googlatlang($address)
@@ -27,13 +27,62 @@ function googlatlang($address)
 
 
 if (isset($_POST['save_people'])) {
-	
+	$req_id = $_POST['req_id'];
 	//echo "<pre>";print_r($_POST);die;
+	if (isset($_FILES["myFile"]['name']) && !empty($_FILES["myFile"]['name'])) {
+		$filepath = $_FILES['myFile']['tmp_name'];
+		$fileSize = filesize($filepath);
+		$fileinfo = finfo_open(FILEINFO_MIME_TYPE);
+		$filetype = finfo_file($fileinfo, $filepath);
+
+		if ($fileSize === 0) {
+			echo "<script>window.location.href='edit_technicianse.php?action=edit&id=".base64_encode($req_id)."'</script>";
 	
+			$_SESSION['fileError'] = 'set';
+		}
+
+		if ($fileSize > 3145728) { // 3 MB (1 byte * 1024 * 1024 * 3 (for 3 MB))
+			echo "<script>window.location.href='edit_technicianse.php?action=edit&id=".base64_encode($req_id)."'</script>";
+	
+			$_SESSION['fileSizeError'] = 'set';
+		}
+
+		$allowedTypes = [
+		   'image/png' => 'png',
+		   'image/jpeg' => 'jpg'
+		];
+
+		if (!in_array($filetype, array_keys($allowedTypes))) {
+			echo "<script>window.location.href='edit_technicianse.php?action=edit&id=".base64_encode($req_id)."'</script>";
+	
+			$_SESSION['fileTypeError'] = 'set';
+		}
+
+		$filename = time().basename($filepath); // I'm using the original name here, but you can also change the name of the file here
+		$extension = $allowedTypes[$filetype];
+		$targetDirectory ="uploads"; // __DIR__ is the directory of the current PHP file
+
+		$newFilepath = $targetDirectory . "/" . $filename . "." . $extension;
+
+		if (!copy($filepath, $newFilepath)) { // Copy the file, returns false if failed
+			echo "<script>window.location.href='edit_technicianse.php?action=edit&id=".base64_encode($req_id)."'</script>";
+	
+			$_SESSION['fileMoveError'] = 'set';
+		}
+		unlink($filepath); // Delete the temp file
+	}else{
+		if(empty($_POST['aadhar_hidden'])){
+			echo "<script>window.location.href='edit_technicianse.php?action=edit&id=".base64_encode($req_id)."'</script>";
+	
+			$_SESSION['fileError'] = 'set';
+		}else{
+			$newFilepath = $_POST['aadhar_hidden'];
+		}
+	}
 	$name = $_POST['name'];
 	$number = $_POST['number'];
 	//$status = $_POST['status'];
-	$req_id = $_POST['req_id'];
+	
 	
 	$technician_id = $_POST['technician_id'];
 	$aadhar_no = $_POST['aadhar_no'];
@@ -112,7 +161,7 @@ if (isset($_POST['save_people'])) {
 		'gender' => $gender, 'dob' => $birth_date , 'document_submit' => $document, 'home_address' => $home_address, 
 		'home_pin_code' => $home_pin_code , 'home_latitude' => $home_lat, 'home_longitude' => $home_lng, 'ofy_address' => $ofy_address, 
 		'ofy_pin_code' => $ofy_pin_code, 'ofy_latitude' => $lat, 'ofy_longtitude' => $lng, 'ofy_from_time' =>$from_time, 
-		'ofy_to_time' => $to_time, 'specialization' => $specialization , 'date_of_joining' => $joining_date, 'monthly_salary' => $monthly_salary);
+		'ofy_to_time' => $to_time, 'specialization' => $specialization , 'date_of_joining' => $joining_date, 'monthly_salary' => $monthly_salary, 'aadhar_img'=> $newFilepath);
 		//echo "<pre>";print_r($form_val);die;
 		$condition = array('id' => $req_id, 'loginid' => $_SESSION['user_id']);            
 		$result = update_query($db_name.'.technicians_login_details', $form_val, $condition);
@@ -167,7 +216,7 @@ if (isset($_POST['save_people'])) {
             <h5>Edit Technicians</h5>
           </div>
           <div class="widget-content nopadding">
-            <form name="myForm" id="myForm" action="" method="post" class="form-horizontal" autocomplete="off">
+            <form name="myForm" id="myForm" action="" method="post" class="form-horizontal" autocomplete="off" enctype="multipart/form-data">
               <div class="alert alert-error error_display" style="display:none">
                 <button class="close" data-dismiss="alert">x</button>
                 <strong class="error_submission">Error!</strong><span id="print_err"></span>
@@ -215,7 +264,13 @@ if (isset($_POST['save_people'])) {
                 <label class="control-label">Aadhar Number:</label>
                 <div class="controls">
                   <input type="text" name="aadhar_no" id="aadhar_no" class="mandatory" value="<?php echo $get_emp_recd[0]['aadhar_no'];?>" placeholder="Aadhar Number " />
-                  <span id="branch_error"></span> </div>
+                  <span id="branch_error"></span><br>
+				  <input type="file" name="myFile">
+				  <input type="hidden" name="aadhar_hidden" value="<?php echo $get_emp_recd[0]['aadhar_img'];?>">
+				  <?php if(isset($get_emp_recd[0]['aadhar_img'])){?>
+				  <img src="<?php echo $get_emp_recd[0]['aadhar_img'];?>" style="width:100px;height:100px;">
+				  <?php }?>
+				</div>
               </div>
                            
               

@@ -26,7 +26,48 @@ function googlatlang($address)
 if (isset($_POST['save_people'])) {
 	
 	//echo "<pre>";print_r($_POST);die;
-	
+	if (isset($_FILES["myFile"])) {
+		$filepath = $_FILES['myFile']['tmp_name'];
+		$fileSize = filesize($filepath);
+		$fileinfo = finfo_open(FILEINFO_MIME_TYPE);
+		$filetype = finfo_file($fileinfo, $filepath);
+
+		if ($fileSize === 0) {
+			echo "<script>window.location.href='add_technicianse.php'</script>";
+			// echo "filesize";
+			$_SESSION['fileError'] = 'set';
+		}
+
+		if ($fileSize > 3145728) { // 3 MB (1 byte * 1024 * 1024 * 3 (for 3 MB))
+			echo "<script>window.location.href='add_technicianse.php'</script>";
+			// echo "size";
+			$_SESSION['fileSizeError'] = 'set';
+		}
+
+		$allowedTypes = [
+		   'image/png' => 'png',
+		   'image/jpeg' => 'jpg'
+		];
+
+		if (!in_array($filetype, array_keys($allowedTypes))) {
+			echo "<script>window.location.href='add_technicianse.php'</script>";
+			// echo "type";
+			$_SESSION['fileTypeError'] = 'set';
+		}
+
+		$filename = time().basename($filepath); // I'm using the original name here, but you can also change the name of the file here
+		$extension = $allowedTypes[$filetype];
+		$targetDirectory ="uploads"; // __DIR__ is the directory of the current PHP file
+
+		$newFilepath = $targetDirectory . "/" . $filename . "." . $extension;
+
+		if (!copy($filepath, $newFilepath)) { // Copy the file, returns false if failed
+			echo "<script>window.location.href='add_technicianse.php'</script>";
+			// echo "move";
+			$_SESSION['fileMoveError'] = 'set';
+		}
+		unlink($filepath); // Delete the temp file
+	}
 	$name = $_POST['name'];
 	$number = $_POST['number'];
 	$technician_id = $_POST['technician_id'];
@@ -111,7 +152,7 @@ if (isset($_POST['save_people'])) {
 		'home_address' =>$home_address, 'home_pin_code' => $home_pin_code, 'home_latitude' => $home_lat, 'home_longitude' => $home_lng,
 		'ofy_address' =>$ofy_address,  'ofy_pin_code' => $ofy_pin_code , 'ofy_latitude' => $lat, 'ofy_longtitude' => $lng,  
 		'ofy_from_time' =>$from_time, 'ofy_to_time' => $to_time,  'specialization' => $specialization , 'date_of_joining' => $joining_date ,
-		'monthly_salary' => $monthly_salary ));
+		'monthly_salary' => $monthly_salary , 'aadhar_img'=> $newFilepath));
 		
 		if($insert_query) {
 
@@ -139,7 +180,7 @@ if (isset($_POST['save_people'])) {
             <h5>Add Technicians</h5>
           </div>
           <div class="widget-content nopadding">
-            <form name="myForm" id="myForm" action="" method="post" class="form-horizontal" autocomplete="off">
+            <form name="myForm" id="myForm" action="" method="post" class="form-horizontal" autocomplete="off" enctype="multipart/form-data">
               <div class="alert alert-error error_display" style="display:none">
                 <button class="close" data-dismiss="alert">x</button>
                 <strong class="error_submission">Error!</strong><span id="print_err"></span>
@@ -186,7 +227,8 @@ if (isset($_POST['save_people'])) {
                 <label class="control-label">Aadhar Number:</label>
                 <div class="controls">
                   <input type="text" name="aadhar_no" id="aadhar_no" class="mandatory" placeholder="Aadhar Number " value="<?=$aadhar_no;?>" />
-                  <span id="branch_error"></span> </div>
+                  <span id="branch_error"></span><br>
+				  <input type="file" name="myFile"> </div>
               </div>              
                             
               <div class="control-group">
