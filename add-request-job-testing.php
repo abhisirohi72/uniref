@@ -11,7 +11,7 @@ function googlatlang($address)
 		
 	// Make the HTTP request
 	$data = @file_get_contents($url);
- abhisheks
+ abhishek
 	// Parse the json response
 	$jsondata = json_decode($data,true);
 
